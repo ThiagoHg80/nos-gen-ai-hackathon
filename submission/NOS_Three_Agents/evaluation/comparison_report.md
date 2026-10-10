@@ -2,6 +2,71 @@
 
 Date: 2026-10-10. Workspace: `NOS_Three_Agents/`.
 
+## 0. Live update (10 Oct 2026, about 18:00 Lisbon)
+
+Sections 1 to 12 were written before any live run. Where they say that no
+live result exists, this section supersedes them.
+
+**What ran.** Live benchmark `bench-live-20261010T170036Z` on
+`gemini-3.8-flash`, temperature at the model default. The configured
+`gemini-3.6-flash` returned HTTP 429 (free-tier quota), so the model was
+switched through `NOS_GEMINI_MODEL` and the freeze manifest was rewritten
+with a note; no prompt or code changed. Requests used: 8 of 24.
+
+| Agent | Trial | Status | What happened |
+|---|---|---|---|
+| A | 1 | CANDIDATE_INVALID | All masks correct; the trailing space of the last line (line 60) is missing |
+| A | 2 | CANDIDATE_VALID | Strictly valid; identical to the reference rendering, 60 of 60 lines |
+| A | 3 | CANDIDATE_INVALID | Same single deviation as trial 1 |
+| B | 1 | PIPELINE_FAILED | HTTP 400 `INVALID_ARGUMENT` on the ledger request |
+| C | 1 | PIPELINE_FAILED | HTTP 400 `INVALID_ARGUMENT` on the spans request |
+| B, C | 2, 3 | NOT_RUN | Skipped: the same request would fail again |
+
+One earlier single run of A on the same model was also valid.
+
+**Agent A, measured (PROVISIONAL, reference not human-reviewed).**
+
+| Measure | Trial 1 | Trial 2 | Trial 3 |
+|---|---|---|---|
+| Reference MASK words hidden (of 46) | 46 | 46 | 46 |
+| Reference KEEP words hidden (of 193) | 0 | 0 | 0 |
+| Ambiguous words hidden (of 115) | 0 | 0 | 0 |
+| Precision / recall | 1.00 / 1.00 | 1.00 / 1.00 | 1.00 / 1.00 |
+| Unauthorised character changes | 1 deleted | 0 | 1 deleted |
+| Valid if trailing whitespace is ignored | yes | yes | yes |
+| Prompt / output / thinking tokens | 1,988 / 798 / 4,516 | 1,988 / 799 / 4,051 | 1,988 / 798 / 4,978 |
+| Model latency | 61 s | 74 s | 54 s |
+
+**How to read this.**
+
+- The reference and A's prompt were written from the same masking policy
+  by the same author. Full agreement shows that the model follows our
+  policy on this document. It does not show agreement with the organisers'
+  hidden reference.
+- The three trials made identical masking decisions. That is three runs on
+  one document, not proof of general reliability.
+- A's only observed weakness is the one predicted for a model-written
+  document: whitespace. Two of three trials dropped the final trailing
+  space. Whether that matters depends on whether the hidden reference
+  keeps trailing spaces, which is still unknown.
+- **B and C are unmeasured, not worse.** Both failed before producing any
+  output. The two failing requests are the only ones that send a
+  `responseSchema`; A, which sends none, works. That points at the
+  structured-output request format, but the cause is not diagnosed. Fixing
+  it needs a code change and one or two requests to confirm.
+- Cost is UNKNOWN: no verified price was retrieved.
+
+Real error text, as saved (no secret in it):
+
+```
+{"error": {"code": 400, "message": "Request contains an invalid argument.", "status": "INVALID_ARGUMENT"}}
+```
+
+Results: `evaluation/benchmark_results.csv` and
+`evaluation/benchmark_tables.md`. The raw artifacts of the live runs
+(requests, raw responses, candidates, validation reports and the request
+log) are kept on the machine that ran them and are not committed.
+
 ## 1. Summary
 
 - Three agents are implemented and run end to end through one CLI.
