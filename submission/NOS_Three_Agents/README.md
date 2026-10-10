@@ -28,7 +28,7 @@ frozen hashes depend on exact bytes.
 
 ## Setup
 
-Windows PowerShell, Python 3.11, from this folder:
+Windows PowerShell, Python 3.12.7 (locally verified), from this folder:
 
 ```powershell
 python -m venv .venv
@@ -225,3 +225,30 @@ Package references:
 Project-wide working rules and delivery checks are in
 [AGENTS.md](../AGENTS.md) and
 [COMPETITION_COMPLIANCE.md](../COMPETITION_COMPLIANCE.md).
+
+
+## Verified local environment
+
+The complete offline suites for this workspace and submission/agent were
+verified on Python 3.12.7: 132 tests passed and one explicitly selected
+real-document check was skipped. Repository flake8, pip check, source hashes
+and fresh PDF extraction also passed. No Gemini requests were made.
+
+Exact tested top-level package versions are recorded in
+evaluation/verified_environment.json. Install requirements.txt for this
+workspace, requirements-privacy.txt for optional privacy checks, and the
+packages listed in ../agent/README.md for the separate agent. Use the same
+Python interpreter for installation and execution. This record is not a
+complete transitive dependency lock or evidence of live model quality.
+
+The previous Python 3.11.9 freeze is preserved byte-for-byte under
+evaluation/freeze_history/, identified by its SHA-256. A new freeze records
+the current Python 3.12.7 environment and reviewed files, using the existing
+run_benchmark.py --freeze --note mechanism. Previous runs retain their original
+freeze identities and must not be compared as identical configurations.
+The active masking policy remains v1; the additional v2 file is recorded by
+the existing broad freeze patterns but is not selected by this change.
+
+A freeze verifies Python, PyMuPDF and the configured source-file hashes.
+It does not enforce every optional/transitive dependency version, prevent
+concurrent Git edits, or establish a competition score.
