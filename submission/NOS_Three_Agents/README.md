@@ -222,3 +222,6 @@ Package references:
 [spaCy and multilingual model](https://spacy.io/models/xx),
 [Great Expectations](https://docs.greatexpectations.io/),
 [pandas](https://pandas.pydata.org/).
+Project-wide working rules and delivery checks are in
+[AGENTS.md](../AGENTS.md) and
+[COMPETITION_COMPLIANCE.md](../COMPETITION_COMPLIANCE.md).
