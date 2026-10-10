@@ -1,0 +1,85 @@
+{
+  "contract_version": "1.0",
+  "agent_id": "A",
+  "agent_name": "Gated Rewrite",
+  "run_id": "A-live-t01-20261010T165728384892Z",
+  "trial": 1,
+  "mode": "LIVE",
+  "label": "LIVE Gemini run",
+  "started_utc": "2026-10-10T16:57:28+00:00",
+  "hashes": {
+    "source_sha256": "a5f6989f043b946f4f4b2a818ca95778b611eb0a114dc417940dfbae33deed74",
+    "policy_sha256": "40d668d93658aaf53f330395ff646b5b7b4d89018e0dd943e79a6b7c5f8b7ee4",
+    "model_config_sha256": "9eb8a45098c9cb94ff115d7001e087b5f66fbd28e1b80333a3413659dccd74eb",
+    "freeze_manifest_sha256": "35f37e8b0f71e4697e9e58010f9f2ffd684955b754c3dd4c8e358945dbbc4b2c",
+    "agent_files_sha256": {
+      "system_prompt.txt": "03bc475cc2ce1b236463eb6f51c83e329debaecf7690346e7094c26648b07f4e",
+      "user_template.txt": "5e904e27776eee7832954aa701b88c10f6329838b0135eeb477c31f06727a56e",
+      "config.json": "920f2aca65aca5780727a95e4f602b5111d4326545eb6ee980e8acc64ef7c548"
+    }
+  },
+  "model": {
+    "id": "gemini-3.6-flash",
+    "id_source": "config",
+    "temperature": "model default (not sent)",
+    "max_output_tokens": 16384
+  },
+  "status": "PIPELINE_FAILED",
+  "failure_reason": "RATE_LIMITED: {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20,",
+  "competition_eligibility": {
+    "status": "ELIGIBLE_UNDER_EVERY_READING_FOUND",
+    "basis": "submission.txt would be the unmodified model response to one prompt.",
+    "open_points": [
+      "How the hidden Prompt Evaluation uses prompt.txt is UNVERIFIED.",
+      "This agent sends a system instruction and a user message; prompt.txt holds one text, so the two would be submitted joined."
+    ]
+  },
+  "validation": {
+    "input_size": {
+      "estimated_input_tokens_upper_bound": 3442,
+      "input_token_limit_applied": 100000,
+      "estimated_output_tokens_upper_bound": 1357,
+      "max_output_tokens": 16384,
+      "method": "characters / 2.0 (deliberately pessimistic)"
+    }
+  },
+  "usage": {
+    "calls_submitted": 1,
+    "http_attempts": 2,
+    "prompt_tokens": "UNKNOWN",
+    "output_tokens": "UNKNOWN",
+    "thoughts_tokens": "UNKNOWN",
+    "total_tokens": "UNKNOWN",
+    "cost": "UNKNOWN"
+  },
+  "stages": [
+    {
+      "stage": "stage1_rewrite",
+      "status": "RATE_LIMITED",
+      "ok": false,
+      "finish_reason": null,
+      "http_status": 429,
+      "http_attempts": 2,
+      "model_latency_s": 0.8821,
+      "model_version": null,
+      "usage": {
+        "prompt_tokens": null,
+        "output_tokens": null,
+        "thoughts_tokens": null,
+        "total_tokens": null
+      },
+      "error": "{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20,"
+    }
+  ],
+  "timings": {
+    "model_s": 0.8821,
+    "render_s": 0.0,
+    "validation_s": 0.0,
+    "pipeline_s": 0.8946
+  },
+  "artifacts": {
+    "request": "runs/A_gated_rewrite/A-live-t01-20261010T165728384892Z/stage1_request.json",
+    "stage1_rewrite_raw_response": "runs/A_gated_rewrite/A-live-t01-20261010T165728384892Z/stage1_rewrite_raw_response.json",
+    "result": "runs/A_gated_rewrite/A-live-t01-20261010T165728384892Z/result.json"
+  }
+}

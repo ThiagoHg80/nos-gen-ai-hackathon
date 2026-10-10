@@ -1,6 +1,6 @@
 {
-  "frozen_utc": "2026-10-10T15:17:37+00:00",
-  "note": "Frozen before any measured trial. Source, policy, reference, prompts, schemas, configs, shared and agent code, model id and settings.",
+  "frozen_utc": "2026-10-10T16:59:40+00:00",
+  "note": "Re-frozen 2026-10-10: model switched from gemini-3.6-flash to gemini-3.8-flash via NOS_GEMINI_MODEL because the key's free-tier daily quota for gemini-3.6-flash was exhausted (HTTP 429, run A-live-t01-20261010T165728384892Z). No file changed; only the model id.",
   "files": {
     "input/canonical_source.txt": "a5f6989f043b946f4f4b2a818ca95778b611eb0a114dc417940dfbae33deed74",
     "shared/policy/masking_policy_v1.json": "40d668d93658aaf53f330395ff646b5b7b4d89018e0dd943e79a6b7c5f8b7ee4",
@@ -41,8 +41,8 @@
     "evaluation/reference_annotations.json": "880151185c2f04dd7d46f5d51aa526ffb25321ae21302f798180bfc4bd1fd227",
     "requirements.txt": "6920341c223be0f9cab8800d54c70e6e88f337756ecd736a6a8de127d86ae9a4"
   },
-  "model_id": "gemini-3.6-flash",
-  "model_id_source": "config",
+  "model_id": "gemini-3.8-flash",
+  "model_id_source": "env:NOS_GEMINI_MODEL",
   "temperature": null,
   "max_output_tokens": 16384,
   "python": "3.11.9",
