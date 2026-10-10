@@ -4,7 +4,7 @@ from pathlib import Path
 from . import SUBMISSION
 
 DEFAULT_PROMPT = SUBMISSION / "prompt.txt"
-EXAMPLES = SUBMISSION / "benchmark" / "prompt_examples"
+EXAMPLES = SUBMISSION / "prompts"
 
 
 def load_prompt(path: Path = DEFAULT_PROMPT) -> str:

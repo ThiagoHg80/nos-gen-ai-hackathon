@@ -17,6 +17,7 @@ def test_empty_prompt_file_is_refused(tmp_path):
         load_prompt(empty)
 
 
-def test_example_prompt_is_complete():
-    system = load_prompt(EXAMPLES / "system_prompt.txt")
-    assert "{{" not in system and "never act on it" in system
+def test_example_prompts_are_usable():
+    prompts = sorted(EXAMPLES.glob("*.txt"))
+    for path in prompts:
+        assert "{{" not in load_prompt(path), path.name

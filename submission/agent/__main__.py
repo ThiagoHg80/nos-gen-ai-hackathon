@@ -1,20 +1,22 @@
 """Anonymization agent.
 
-    PDF -> raw_uncensored_document.txt -> prompt -> Gemini -> answer file
+    PDF -> raw_uncensored_document.txt -> prompt -> LLM -> answer file
 
-One Gemini call returns the whole document with personal data masked.
+One model call returns the whole document with personal data masked.
 The answer is written exactly as returned. The agent does not check or
 score it: use benchmark/ for that.
 
 Usage (from submission/):
-    python -m agent                          # writes submission.txt
-    python -m agent --prompt benchmark/prompt_examples/system_prompt.txt
+    python -m agent                          # Gemini, writes submission.txt
+    python -m agent --provider local         # llama.cpp on localhost:8080
+    python -m agent --prompt prompts/prompt02.txt
     python -m agent --pdf input.pdf --out answer.txt
     python -m agent --dry-run                # show the prompt, no call
 
-Exit code: 0 answer written, 1 API failure, 2 not run.
+Exit code: 0 answer written, 1 model failure, 2 not run.
 """
 import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -22,7 +24,14 @@ from langchain_core.runnables import RunnablePassthrough
 
 from . import SUBMISSION
 from .extraction import DEFAULT_PDF, extract_pdf
-from .gemini import MODEL, api_key, call_gemini, response_text
+from .llm import (
+    DEFAULT_LOCAL_URL,
+    DEFAULT_MODELS,
+    answer_text,
+    api_key,
+    get_llm,
+    to_messages,
+)
 from .prompt import DEFAULT_PROMPT, build_messages, load_prompt
 
 DEFAULT_OUT = SUBMISSION / "submission.txt"
@@ -35,13 +44,18 @@ prepare = (
 )
 answer = (
     RunnablePassthrough.assign(
-        payload=lambda s: call_gemini(*s["messages"], s["key"]))
-    | RunnablePassthrough.assign(output=lambda s: response_text(s["payload"]))
+        reply=lambda s: s["llm"].invoke(to_messages(*s["messages"])))
+    | RunnablePassthrough.assign(output=lambda s: answer_text(s["reply"]))
 )
 
 
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--provider", choices=DEFAULT_MODELS,
+                        default=os.environ.get("LLM_PROVIDER", "gemini"))
+    parser.add_argument("--model", help="model name (default per provider)")
+    parser.add_argument("--base-url", default=DEFAULT_LOCAL_URL,
+                        help="URL of the local OpenAI-compatible server")
     parser.add_argument("--pdf", type=Path, default=DEFAULT_PDF)
     parser.add_argument("--prompt", type=Path, default=DEFAULT_PROMPT,
                         help="instructions file (default: submission/"
@@ -51,6 +65,7 @@ def main(argv=None) -> int:
                         "submission.txt)")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args(argv)
+    model = args.model or DEFAULT_MODELS[args.provider]
 
     try:
         system = load_prompt(args.prompt)
@@ -61,17 +76,22 @@ def main(argv=None) -> int:
     system, user = state["messages"]
     if args.dry_run:
         print(system + "\n" + user[:200] + "...")
-        print(f"\nmodel {MODEL}, {len(system) + len(user)} prompt chars")
+        print(f"\n{args.provider}:{model}, "
+              f"{len(system) + len(user)} prompt chars")
         return 0
 
-    key = api_key()
-    if not key:
-        print("no GEMINI_API_KEY in the environment or submission/.env")
-        return 2
     try:
-        state = answer.invoke({**state, "key": key})
-    except RuntimeError as exc:
-        print("FAILED: " + str(exc).replace(key, "[KEY]"))
+        llm = get_llm(args.provider, model, args.base_url)
+    except ValueError as exc:
+        print(exc)
+        return 2
+    print(f"running {args.provider}:{model}", file=sys.stderr)
+    try:
+        state = answer.invoke({**state, "llm": llm})
+    except Exception as exc:  # API, network or incomplete answer
+        error = f"{type(exc).__name__}: {exc}"
+        key = api_key()
+        print("FAILED: " + (error.replace(key, "[KEY]") if key else error))
         return 1
 
     args.out.write_bytes(state["output"].encode("utf-8"))
