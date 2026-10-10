@@ -1,9 +1,10 @@
 {
-  "frozen_utc": "2026-10-10T15:17:37+00:00",
-  "note": "Frozen before any measured trial. Source, policy, reference, prompts, schemas, configs, shared and agent code, model id and settings.",
+  "frozen_utc": "2026-10-10T23:27:44+00:00",
+  "note": "Reverified offline on Python 3.12.7: 132 tests passed, 1 optional document check skipped; pip check, repository lint and source integrity passed. Previous freeze archived unchanged in evaluation/freeze_history. Added optional shared/privacy.py and existing inactive masking_policy_v2.json now included by the original freeze patterns. Active policy remains v1. No prompts, model settings, source text or historical runs changed; no Gemini requests made. Tested package versions recorded in evaluation/verified_environment.json.",
   "files": {
     "input/canonical_source.txt": "a5f6989f043b946f4f4b2a818ca95778b611eb0a114dc417940dfbae33deed74",
     "shared/policy/masking_policy_v1.json": "40d668d93658aaf53f330395ff646b5b7b4d89018e0dd943e79a6b7c5f8b7ee4",
+    "shared/policy/masking_policy_v2.json": "34805e77a72fee49d7317807b741ab8751ec57dc054fbd860897fbbe3a8c70f3",
     "shared/model_config.json": "9eb8a45098c9cb94ff115d7001e087b5f66fbd28e1b80333a3413659dccd74eb",
     "shared/__init__.py": "e9fd6b7860eb8bdc5eb25a09c87b26a22b799ab44beaed04e9d21903e9e4f9d1",
     "shared/artifacts.py": "6cb6a5bf23de2c51c64826521a23ef226fbb35724c8f1138b8e2c85715eb9690",
@@ -13,6 +14,7 @@
     "shared/gemini_client.py": "81cf212c75718781a46c4e705d257aaccd4a763fa9abd69c226f95166dd42e1c",
     "shared/ledger.py": "c664eb548f772c832845d331687e064f9d11cb21a1d63b69c7ddf0307e83cc0b",
     "shared/policy.py": "856514fd782277c919615f4712b6300d7c2891bb0fcf2f159e790468a400fc2b",
+    "shared/privacy.py": "7c86a9474bce4f537ab2468f728ed077a415ed7f83709bf66b5d91cf135e117b",
     "shared/runner.py": "88f51a643466cec1cf904fd814936e40314038bf2761a4f0aed1adbc2fa56052",
     "shared/schema.py": "61ab9912e83676b3bc1a1ad1298d04b869015ecdd2b6a8723ee989f3f5688ca4",
     "shared/textmodel.py": "dca4d006679b1fa4ec748a213baed85a27af06f8612662f7d5ad708edba4e2cd",
@@ -45,6 +47,6 @@
   "model_id_source": "config",
   "temperature": null,
   "max_output_tokens": 16384,
-  "python": "3.11.9",
+  "python": "3.12.7",
   "pymupdf": "1.27.2.3"
 }
