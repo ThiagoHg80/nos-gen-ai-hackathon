@@ -1,4 +1,7 @@
-# NOS Three Agents
+# NOS Three Agents — technical guide
+
+Detailed setup, commands, limits and artifacts. The project story, the
+results and the team are in the [main README](../../README.md).
 
 Three independent, runnable anonymization agents for the NOS track of
 JunctionX Lisbon 2026, with a shared extraction step, masking policy, API
@@ -10,9 +13,10 @@ adapter, validators and a bounded benchmark.
 | B - Decision Ledger + LLM Rendering | Call 1 returns decisions; call 2 renders the document | Validates the ledger, then the rendering; never modifies it |
 | C - Span Ledger + Deterministic Rendering | One call returns sensitive spans | Verifies every span and renders the document itself |
 
-**Current status:** all three are implemented and tested offline. No live
-Gemini call has been made, because no API key is configured on this
-machine. See `evaluation/comparison_report.md`.
+**Current status (10 Oct 2026, evening):** all three are implemented and
+tested offline. Agent A has run live on `gemini-3.8-flash`. Agents B and C
+fail on their first live request with HTTP 400 and are not measured yet.
+See `evaluation/comparison_report.md`, section 0.
 
 Nothing here is a competition submission yet. The workspace does not
 write `submission/submission.txt` or `submission/prompt.txt`.
@@ -125,7 +129,16 @@ Re-score saved runs without calling the model:
 | Output cap | 16,384 tokens; truncation is detected and fails the run | same |
 | Input size | checked before each request; no chunking | `check_input_size` |
 
-Requests used so far: 0.
+Requests used so far: 8 of 24.
+
+Live runs so far used `gemini-3.8-flash`, because the default
+`gemini-3.6-flash` hit the key's free-tier quota (HTTP 429). The freeze
+manifest records that switch, so set the same model in the shell before a
+live run, otherwise the freeze check blocks it:
+
+```powershell
+$env:NOS_GEMINI_MODEL = "gemini-3.8-flash"
+```
 
 ## Inputs and artifacts
 
@@ -170,7 +183,9 @@ A failed run never gets a valid status, and its response is still saved.
 
 ## Known limitations
 
-- No live result exists yet. Mock tests prove code behaviour only.
+- Live results exist for agent A only: three benchmark trials on one
+  document. B and C are blocked by an HTTP 400 on their structured-output
+  request. Mock tests prove code behaviour only.
 - The reference annotations are an AI-written draft that no human has
   reviewed. Every accuracy figure computed against them is provisional.
 - The masking scope, the word rule and the whitespace baseline are
@@ -181,9 +196,10 @@ A failed run never gets a valid status, and its response is still saved.
 - The canonical source keeps the space PyMuPDF emits at the end of every
   line of this PDF. Whether the hidden reference keeps it is unknown, so
   each candidate is also checked with trailing whitespace ignored.
-- `gemini-3.6-flash` access with the team's key is unverified. The REST
-  field names were checked against Google's public API definition, not
-  against a live call.
+- The plain-text request used by agent A works live. The structured-output
+  request used by B and C was checked only against Google's public API
+  definition and is rejected by `gemini-3.8-flash`; the cause is not
+  diagnosed yet.
 - Structural validation cannot show that all personal data was masked.
 - Agent C's and agent B's competition eligibility is unverified; see the
   report.
