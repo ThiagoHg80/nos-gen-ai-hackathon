@@ -14,6 +14,11 @@ if not spacy.util.is_package("xx_ent_wiki_sm"):
         allow_module_level=True,
     )
 
+from great_expectations.data_context.types.base import (  # noqa: E402
+    DataContextConfig,
+    InMemoryStoreBackendDefaults,
+)
+
 from shared.privacy import (  # noqa: E402
     build_privacy_analyzer,
     find_privacy_leaks,
@@ -47,7 +52,14 @@ def test_unsupported_language_is_rejected():
 
 
 def validate_findings(dataframe):
-    context = gx.get_context(mode="ephemeral")
+    # Disable usage telemetry before context creation for private validation.
+    context = gx.get_context(
+        mode="ephemeral",
+        project_config=DataContextConfig(
+            analytics_enabled=False,
+            store_backend_defaults=InMemoryStoreBackendDefaults(),
+        ),
+    )
     source = context.data_sources.add_pandas(name="privacy")
     asset = source.add_dataframe_asset(name="findings")
     definition = asset.add_batch_definition_whole_dataframe("all_findings")

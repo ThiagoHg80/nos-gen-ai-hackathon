@@ -65,3 +65,46 @@ force-push over the team's history.
 6. After team approval, push, open the PR to the original repository main,
    inspect actual evaluation results, and register the PR link on JunctionX.
 7. Prepare a pitch within two minutes.
+
+
+## Additive security measures and remaining risks
+
+These measures are intentionally separate from teammates' model pipelines.
+They do not rewrite generated output, change frozen prompts, or remove
+competition evidence. The preflight is an optional review gate, not an
+enterprise security certification.
+
+| Finding | Measure / rationale | Remaining limitation |
+|---|---|---|
+| Secrets can enter a public commit | security_preflight.py scans indexed blobs for selected Google/GitHub token and private-key patterns; reports categories and filenames only. | Untracked files, earlier history and other secret formats are not scanned. Review findings before committing. |
+| A local-provider URL may send documents externally | --local-url rejects non-loopback destinations and URLs containing credentials, query or fragment. No DNS/network request is made. | The existing agent does not invoke this check automatically; run it with the exact URL before using a local provider. |
+| Candidate validation is not mandatory in the existing agent | --document checks an explicitly selected output using the existing optional privacy checker, plus selected secret patterns. Missing/empty input or setup errors fail. | This tool does not block someone invoking/publishing the agent directly. No findings do not prove anonymity. |
+| Validation errors can print sensitive content | Preflight uses a fixed error message and findings contain categories/offsets, not source text. | Existing agent dry-run/error logs still require a separate team-reviewed change. |
+| Great Expectations analytics was not explicitly disabled | Our privacy test creates its ephemeral context with analytics_enabled=False. | Provider tracing and other packages are not controlled by this setting. |
+| Raw inputs and responses are persisted/versioned | Keep current challenge evidence, which uses fictional data; prohibit reuse with real customer data until storage/access/retention controls are agreed. | No encryption or access-control system is added by this hackathon patch. |
+| The detector covers only five PII entity categories | Secret patterns supplement the existing detector without changing its masking policy. Document country/entity coverage and require human review. | National IDs, bank accounts, indirect identifiers and other categories remain incomplete. |
+| Prompts may be manipulated by document content | Preserve current structural validators and synthetic injection tests; require adversarial evaluation before real deployment. | Tags and prompt instructions alone are not a security boundary. |
+| Production provider, access and retention policies are unverified | Use fictional competition data only; require the team's security/privacy review before any enterprise rollout. | No corporate readiness or regulatory compliance claim is made. |
+
+### Run the optional preflight
+
+From the repository root, using the interpreter with optional privacy
+dependencies installed:
+
+```powershell
+python -B submission/security_preflight.py
+python -B submission/security_preflight.py --local-url http://localhost:8080/v1
+python -B submission/security_preflight.py --document submission/submission.txt
+```
+
+Stage only the reviewed task files before the indexed scan. It reads the index,
+not unstaged edits. Review exit codes: 0 no configured findings, 1 findings need
+review, 2 check could not complete. It performs no model/API call and does not
+modify documents. Named entities intentionally preserved by the challenge may
+be false positives; resolve them through review without silently altering output.
+
+Validation of additive measures: 122 offline tests passed, one real-document
+check skipped unless explicitly selected. The indexed secret scan found no
+configured matches. An earlier run hit an existing timestamp-based run-name
+collision in Agent C; the repeated suite passed. That intermittent collision
+is recorded for team review and was not changed by this patch.
