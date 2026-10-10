@@ -62,9 +62,10 @@ Real error text, as saved (no secret in it):
 {"error": {"code": 400, "message": "Request contains an invalid argument.", "status": "INVALID_ARGUMENT"}}
 ```
 
-Artifacts: `evaluation/benchmark_results.csv`,
-`evaluation/benchmark_tables.md`, `runs/_benchmarks/`, `runs/*/*-live-*`,
-`runs/_budget/live_requests.jsonl`.
+Results: `evaluation/benchmark_results.csv` and
+`evaluation/benchmark_tables.md`. The raw artifacts of the live runs
+(requests, raw responses, candidates, validation reports and the request
+log) are kept on the machine that ran them and are not committed.
 
 ## 1. Summary
 

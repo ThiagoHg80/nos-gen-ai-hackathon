@@ -1,8 +1,0 @@
-{"n": 1, "utc": "2026-10-10T16:57:28+00:00", "stage": "A.rewrite", "run_id": "A-live-t01-20261010T165728384892Z", "attempt": 1}
-{"n": 2, "utc": "2026-10-10T16:57:28+00:00", "stage": "A.rewrite", "run_id": "A-live-t01-20261010T165728384892Z", "attempt": 2}
-{"n": 3, "utc": "2026-10-10T16:59:40+00:00", "stage": "A.rewrite", "run_id": "A-live-t01-20261010T165940702356Z", "attempt": 1}
-{"n": 4, "utc": "2026-10-10T17:00:36+00:00", "stage": "A.rewrite", "run_id": "A-live-t01-20261010T170036890434Z", "attempt": 1}
-{"n": 5, "utc": "2026-10-10T17:01:38+00:00", "stage": "B.ledger", "run_id": "B-live-t01-20261010T170138048109Z", "attempt": 1}
-{"n": 6, "utc": "2026-10-10T17:01:41+00:00", "stage": "C.spans", "run_id": "C-live-t01-20261010T170141982882Z", "attempt": 1}
-{"n": 7, "utc": "2026-10-10T17:01:44+00:00", "stage": "A.rewrite", "run_id": "A-live-t02-20261010T170144341219Z", "attempt": 1}
-{"n": 8, "utc": "2026-10-10T17:02:58+00:00", "stage": "A.rewrite", "run_id": "A-live-t03-20261010T170258514186Z", "attempt": 1}
