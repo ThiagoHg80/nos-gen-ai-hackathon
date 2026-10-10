@@ -187,3 +187,38 @@ A failed run never gets a valid status, and its response is still saved.
 - Structural validation cannot show that all personal data was masked.
 - Agent C's and agent B's competition eligibility is unverified; see the
   report.
+
+
+## Optional multilingual privacy validation
+
+Install only when needed, from this folder:
+
+```powershell
+& $py -m pip install -r requirements-privacy.txt
+& $py -I -X utf8 -m pytest tests/test_censorship.py -v
+```
+
+One shared xx_ent_wiki_sm pipeline handles English, Portuguese and Spanish.
+The model download is approximately 11 MB; the other packages add further
+installation size. Agent outputs are not changed. Tests use synthetic text
+and skip when optional dependencies or the model are absent.
+Domain rules and models are loaded locally without downloads during checks.
+
+To explicitly check an existing document, select its path:
+
+```powershell
+$env:NOS_PRIVACY_DOCUMENT = "..\submission.txt"
+& $py -I -X utf8 -m pytest tests/test_censorship.py -v
+Remove-Item Env:NOS_PRIVACY_DOCUMENT
+```
+
+An explicitly selected missing or empty document fails. Findings report
+entity types and offsets, not sensitive source text. No findings do not prove
+anonymity; false positives and negatives require human review. This heuristic
+does not check formatting or establish competition eligibility.
+
+Package references:
+[Presidio](https://github.com/microsoft/presidio),
+[spaCy and multilingual model](https://spacy.io/models/xx),
+[Great Expectations](https://docs.greatexpectations.io/),
+[pandas](https://pandas.pydata.org/).
