@@ -8,15 +8,16 @@ model is Gemini, or any local OpenAI-compatible server for testing.
 PDF -> raw_uncensored_document.txt -> prompt -> LLM -> answer file
 ```
 
-The agent does not check, score or record its answers. That is the job of
-`benchmark/`, which you can run on any answer file afterwards.
+The agent does not check, score or record its answers. The benchmark folder
+currently contains synthetic data, not executable evaluation modules.
+Use the optional preflight and the project evaluation tools separately.
 
 ## Setup
 
 Run everything from `submission/`.
 
 ```
-pip install pymupdf langchain-core langchain-google-genai langchain-openai pytest
+python -m pip install PyMuPDF==1.27.2.3 langchain-core==1.6.9 langchain-google-genai==4.4.1 langchain-openai==1.7.0 pytest==9.1.1
 ```
 
 ## Models
@@ -43,7 +44,8 @@ The prompt is the instruction text sent as the system message. The
 document is sent separately, as the user message between `<document>` tags.
 
 By default the agent reads `submission/prompt.txt`. If that file is empty
-it stops and says so. Other prompts are in `submission/prompts/`; pass one
+it stops and says so. The prompts directory is not present in the current
+checkout. Pass an existing reviewed file
 with `--prompt`.
 
 ## Run
@@ -51,7 +53,7 @@ with `--prompt`.
 ```
 python -m agent --dry-run                  # show the prompt, no API call
 python -m agent                            # call Gemini, write submission.txt
-python -m agent --prompt prompts/prompt02.txt
+python -m agent --prompt "path/to/reviewed_prompt.txt" --out candidate_review.txt
 python -m agent --pdf other.pdf --out answer.txt
 ```
 
@@ -63,8 +65,9 @@ When the answer goes to `submission.txt` and you passed a different
 `--prompt`, that prompt is also copied into `prompt.txt`, so the two files
 always match.
 
-Nothing is written when the model call fails after one retry or the
-answer is cut off (its `finish_reason` is not `STOP`).
+No new answer file is written when the model call fails or the
+answer is cut off (its `finish_reason` is not `STOP`). PDF extraction happens
+before the model call and may already have written raw text.
 
 Exit codes: `0` answer written, `1` model failure, `2` not run (empty prompt
 or no API key).
@@ -72,8 +75,7 @@ or no API key).
 ## Evaluate an answer
 
 ```
-python -m benchmark.mask_syntax_validation raw_uncensored_document.txt submission.txt
-python -m benchmark.mask_diff raw_uncensored_document.txt submission.txt
+python -B security_preflight.py --document candidate_review.txt
 ```
 
 ## Files
@@ -89,5 +91,12 @@ python -m benchmark.mask_diff raw_uncensored_document.txt submission.txt
 ## Tests
 
 ```
-python -m pytest agent/tests benchmark/tests
+python -m pytest agent/tests NOS_Three_Agents -ra -o addopts="-p no:cacheprovider"
 ```
+
+The locally verified interpreter is Python 3.12.7. Use one virtual environment
+and the same interpreter for pip and execution. The full project setup,
+optional privacy requirements, recorded checks and competition delivery
+instructions are in [the project README](../NOS_Three_Agents/README.md).
+Replace example prompt paths with actual reviewed files. The preflight is
+optional and does not establish anonymity or validate document formatting.

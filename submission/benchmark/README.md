@@ -1,6 +1,6 @@
 # NOS — Synthetic Anonymization Benchmark (50 documents)
 
-- `original/`: 50 original UTF-8 `.txt` documents (40 pt-PT, 10 English).
+- `input/`: 50 original UTF-8 `.txt` documents (40 pt-PT, 10 English).
 - `ground_truth/`: corresponding reference documents with one `*` per whitespace-delimited sensitive token; whitespace-only lines removed.
 - `annotations.json`: sensitive source spans with Python character offsets `[start,end)` and category labels.
 - All personal identifiers are fictional/test values; names and institution names may resemble real entities by coincidence.
@@ -12,3 +12,7 @@ Ground truths were generated deterministically from sensitive placeholders, not 
 
 ## Validation
 `annotations.json` spans refer to the *original* text; ground truths have empty/whitespace-only lines removed. Compare output with ground truth only after verifying the agent's formatting contract.
+
+This directory contains data, not runnable benchmark modules or a tests/
+directory in the current checkout. Setup and the implemented evaluation
+commands are documented in [the project README](../NOS_Three_Agents/README.md).
