@@ -167,6 +167,10 @@ def main(argv=None) -> int:
     total = {"tp": 0, "fp": 0, "fn": 0, "tn": 0}
     failed = valid = 0
     for path in paths:
+        # REVIEW: exact reads preserve CRLF, but validate() rejects CR.
+        # Windows references pass only after LF normalisation.
+        # Agree on the line-ending contract before using syntax results.
+        # See README.md: "Review required: benchmark line endings".
         source = read(path)
         truth = read(args.dataset / "ground_truth" / path.name)
         result, answer = run_one(llm, system, source, truth)

@@ -1,6 +1,7 @@
 # Agent
 
-One model call returns the whole document with personal data masked. The
+The agent asks one model call to return the document with personal data masked.
+It checks the finish reason, but does not verify masking or formatting. The
 answer is written exactly as returned, by default to `submission.txt`. The
 model is Gemini, or any local OpenAI-compatible server for testing.
 
@@ -8,8 +9,9 @@ model is Gemini, or any local OpenAI-compatible server for testing.
 PDF -> raw_uncensored_document.txt -> prompt -> LLM -> answer file
 ```
 
-The agent does not check, score or record its answers. That is the job of
-`benchmark/`, which you can run on any answer file afterwards.
+The agent does not validate or score its answer content or save API run records.
+Use the benchmark validators to inspect saved answers; its scorer executes
+new model calls and records their results.
 
 ## Setup
 
@@ -61,15 +63,21 @@ python -m agent --pdf other.pdf --out answer.txt
 `submission/raw_uncensored_document.txt`.
 
 When the answer goes to `submission.txt` and you passed a different
-`--prompt`, that prompt is also copied into `prompt.txt`, to record the selected instruction. Verify the exact generating request
-and response before final delivery.
+`--prompt`, that prompt is also copied into `prompt.txt` to record the
+instruction. Verify the generating request and response before final delivery.
 
 No new answer file is written when the model call fails (it is not
 retried) or the answer is cut off (its `finish_reason` is not `STOP`). PDF
 extraction happens before the model call and may already have written raw text.
 
+The response and prompt are written sequentially, not atomically: an I/O
+failure after writing the response can leave the prompt unchanged.
+`--dry-run` writes the extracted text and prints the prompt plus the first
+200 characters of the document message; it makes no model call.
+
 Exit codes: `0` answer written, `1` model failure, `2` not run (empty prompt
-or no API key).
+or no API key). File-read, extraction and write failures are not all caught
+by these handlers and can produce a traceback.
 
 ## Evaluate an answer
 

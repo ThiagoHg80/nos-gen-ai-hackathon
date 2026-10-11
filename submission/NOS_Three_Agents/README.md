@@ -17,6 +17,7 @@ not determine an agent's answer.
 ## Contents
 
 - [Current status](#current-status)
+- [Prompt versions and comparison interface](#prompt-versions-and-comparison-interface)
 - [Engineering rationale and development history](#engineering-rationale-and-development-history)
 - [Architecture and repository layout](#architecture-and-repository-layout)
 - [Environment and dependencies](#environment-and-dependencies)
@@ -32,15 +33,15 @@ not determine an agent's answer.
 
 ## Current status
 
-The environment record below describes an earlier verification on
+The historical environment record below describes an earlier verification on
 **Python 3.12.7**, with **132 tests passed and one optional check skipped**.
 Repository flake8, pip check, source hashes, and fresh PDF extraction passed.
 No Gemini requests were made during that verification.
 See [verified_environment.json](evaluation/verified_environment.json).
 
 Maintenance verification on 2026-10-11 passed **151 offline tests**, with
-one explicitly selected real-document check skipped. Repository flake8 and
-whitespace checks passed. No model requests were made. This does not refresh
+one real-document check skipped because no document was explicitly selected.
+Repository flake8 and whitespace checks passed. No model requests were made. This does not refresh
 the historical environment record or the benchmark freeze.
 
 The repository also contains earlier artifacts labelled LIVE and three Agent A
@@ -55,10 +56,70 @@ that predates those LIVE artifacts; its statements about zero live runs and
 for the corresponding evidence. Do not mix results from different freezes.
 
 The provided [submission.txt](../submission.txt) and [prompt.txt](../prompt.txt)
-are nonempty as of 2026-10-11. Git records their addition in commit `be5dfcb`;
-the prompt matches `../prompts/prompt_v3_2.txt`. Their exact generating
-request/response provenance has not been verified by this maintenance review.
-The three-agent workspace does not populate them automatically. Tests passing does not mean the competition entry is ready.
+are nonempty. The prompt matches `../prompts/prompt_v3_2.txt`. The exact
+generating request/response provenance remains unverified. The three-agent
+workspace does not populate these files automatically.
+
+## Prompt versions and comparison interface
+
+The repository separates model instructions, generation, validation and
+visual inspection of saved files. Generation provenance requires a recorded
+request and response; commit authorship does not establish that provenance.
+
+### Prompt and current output
+
+| Version | Difference visible in the tracked prompt |
+|---|---|
+| v3 | Defines the masking policy and word/punctuation rules |
+| v3.1 | Adds short words such as de, da, do and e to the employer-name instruction |
+| v3.2 | Adds an N-words-to-N-asterisks rule and a five-word employer example |
+
+`submission/prompt.txt` matches
+[the v3.2 prompt](../prompts/prompt_v3_2.txt). The word-count checker confirms
+**60/60 aligned lines and 58 asterisks** in the tracked output. Asterisks are
+character counts, not independently verified sensitive-word detections.
+Alignment does not prove unchanged words, spacing, correct masking or anonymity.
+No intermediate v3/v3.1 measurements are established by these prompt files.
+
+The single-call agent defaults to `gemini-3.6-flash` and requests temperature
+0.0; `--model` can override that name. Its current configuration does not
+identify the model used for the existing output. Exact generating
+request/response provenance remains unverified.
+
+The v3.2 prompt asks for masking of direct identifiers and selected contextual
+attributes: names, birth dates, government/professional identifiers, addresses,
+contacts, financial/biometric identifiers, age values, ethnicity, religion,
+employer names and income. It asks to retain clinical content, occupation,
+sex, marital status, number of children, insurance plan names, habits and
+selected event dates. These are instructions to the model; the agent does
+not enforce the categories or verify compliance.
+
+The client accepts both the `.text` property and `.text()` method and checks
+the response finish reason. Its default timeout is 300 seconds, configurable
+with `--timeout`. These code paths do not establish compatibility of the
+entire project with older Python/dependency combinations. For setup and
+commands, use [the agent README](../agent/README.md).
+
+### View the saved output
+
+From the repository root:
+
+```powershell
+python -m http.server 8000 --bind 127.0.0.1
+```
+
+Open [the local comparison page](http://localhost:8000/submission/interface/index.html).
+The [static interface](../interface/index.html) fetches
+`submission/raw_uncensored_document.txt` and `submission/submission.txt`;
+it displays saved files and does not run the model. Opening it through
+`file://` cannot load those files.
+
+The original appears on the left; a word is highlighted when its paired
+output word differs and contains an asterisk. The saved output appears on the right. The page includes a
+theme toggle and stacks panels on narrow screens. It displays load/empty-file
+errors and alignment counts. A line with a different word count is shown
+without highlights; different line counts disable all original highlights.
+These visual checks are separate from the masking syntax and privacy checks.
 
 ## Engineering rationale and development history
 
@@ -67,31 +128,22 @@ which is their only caller. The former `shared/extraction.py` was consolidated
 there to keep preparation logic together. Historical freeze manifests retain
 the old path; live runs remain blocked until an intentional new freeze.
 
-The team's working notes describe a deliberate engineering process: refine
-the baseline prompt, compare alternative architectures, implement a small set
-of finalists, evaluate failures and trade-offs, and explain the final choice.
-The intention is to make decisions understandable to teammates and reviewers,
-rather than present an unexplained final output.
+Our design starts with a shared source and an explicit masking contract.
+We compare direct rewriting, an inspectable decision ledger with model
+rendering, and span detection with deterministic rendering. A common source,
+policy and evaluation makes their differences easier to assess.
 
-Early notes proposed a broader set of generation and red-team specialists.
-A later brainstorming prompt narrowed the target to three finalists.
-These are planning records, not evidence that a specific number of specialists
-was actually invoked or that every proposed experiment was completed.
-The current implementation and Git history establish the following stages:
+The separate single-call agent provides a smaller generation path.
+Evaluation remains outside it so checks report failures without rewriting
+the model answer. Versioned prompts make instruction changes visible; raw
+responses and run records support reproducible comparisons. The v3.2 prompt
+adds a counting rule and a multiword example to address collapsed masks.
 
-| Stage | Evidence in Git | Engineering purpose |
-|---|---|---|
-| Shared extraction, policy and validators | `43a848c` | Give candidate architectures a common source and transformation contract |
-| Three agent implementations | `65ff23f` | Compare direct rewriting, a decision ledger and deterministic rendering |
-| Provisional reference and bounded metrics | `d227d37` | Separate code validation from measured agreement with a draft reference |
-| Requirements evidence and initial reports | `54ffa6c`, `51cd136` | Distinguish official requirements, assumptions and offline evidence |
-| Recorded Agent A trials | `9c165dc` | Preserve trial artifacts rather than infer performance from architecture |
-| Synthetic benchmark documents | `dfb8c7e` | Exercise different document contexts with fictional identifiers |
-| Separate LangChain agent | `c2d375d` | Decouple generation from benchmark evaluation |
-| Local-model provider support | `2ac7b0e` | Allow testing against an explicitly configured local server |
-| Optional multilingual privacy checks | `9f7681f` | Add independent entity detection without changing model output |
-| Working rules and additive security checks | `25ac57a`, `82a4d28` | Explain risks, mitigations and the boundaries of the prototype |
-| Verified environment and refreshed freeze | `bcedc87` | Record tested versions while preserving earlier experiment identities |
+Word counts provide a quick structural signal. Syntax validation,
+reference-based metrics and privacy detection answer different questions,
+so we retain them separately. The browser view helps inspect saved files
+and complements these checks. Improvements need measured evidence rather
+than assumptions about which architecture should perform best.
 
 The implemented flow is:
 
@@ -146,23 +198,12 @@ dataset documentation likewise requests review before authoritative use.
 Do not describe either as fully human-validated until the reviewer, date
 and scope of review are recorded.
 
-### Documentation and prompt provenance
+### Prompt and output provenance
 
-Keep design history, model roles, contributor responsibilities and architecture
-diagrams in documentation. Keep `submission/prompt.txt` reserved for the exact
-prompt that generated the delivered output: it is not the place for a table
-of brainstorming models, team members or the development history.
-
-The working PDF includes prompt experiments and an AI-generated README draft.
-They inform this explanation but do not override the official brief or prove
-that proposed features exist. Its legal/privacy prompt wording is a design
-proposal, not a compliance certification. A static interface exists at `../interface/index.html`. Its presence does not
-establish a deployed service; production deployment remains unverified.
-
-Do not copy credentials from working notes into documentation. If credentials
-were shared in a planning document, revoke and replace valid ones through
-the provider before reuse. Contributor attribution belongs to Git history
-and verified team records; do not infer responsibilities from draft placeholders.
+We keep design rationale in documentation and the generating instruction
+in `submission/prompt.txt`. Matching prompt files help inspection, but
+output provenance requires the recorded request and response. The interface
+displays saved files; it does not generate or validate them.
 
 ## Architecture and repository layout
 
@@ -193,6 +234,7 @@ Paths below are relative to the repository root.
 | `raw_data/document_to_anonymize.pdf` | Organisers' challenge document |
 | `submission/submission.txt`, `submission/prompt.txt` | Required final output and exact generating prompt |
 | `submission/agent/` | Separate single-call agent and offline tests |
+| `submission/interface/index.html` | Browser comparison of saved original and output files |
 | `submission/benchmark/input/`, `ground_truth/` | 50 fictional benchmark documents and reference outputs |
 | `submission/benchmark/annotations.json` | Character spans and labels for that synthetic dataset |
 | `submission/security_preflight.py` | Optional read-only checks of indexed secrets, local URLs and candidates |
@@ -209,9 +251,8 @@ NOS's hidden reference. Its dataset is documented in [the benchmark README](../b
 
 ## Environment and dependencies
 
-Use one agreed interpreter for installation and execution. The current
-locally verified version is **Python 3.12.7 on Windows**. Installing several
-Python versions does not change the code, but invoking a different interpreter
+Use one interpreter for installation and execution. The environment record
+uses **Python 3.12.7 on Windows**. Installing several Python versions does not change the code, but invoking a different interpreter
 can select different packages and invalidate the benchmark freeze.
 
 | Dependency | Recorded version | Purpose |
@@ -499,6 +540,17 @@ Re-score a saved index without a model call, using new output names:
 ```
 
 Replace SELECTED_INDEX with an existing reviewed index.
+
+### Review required: benchmark line endings
+
+<!-- Review the exact-read CRLF/LF contract in benchmark/scorer.py. -->
+<p style="color: #c62828;"><strong>🔴 CRLF/LF mismatch requires review before interpreting syntax results.</strong></p>
+
+The 50 references in the inspected Windows checkout contain CRLF.
+The scorer preserves those bytes, while the validator rejects CR.
+They fail the exact-byte check and pass after newline translation.
+See [the benchmark review note](../benchmark/README.md#review-required-benchmark-line-endings).
+
 The separate 50-document dataset, syntax validator, word diff and scorer
 are documented in [the benchmark README](../benchmark/README.md). Their
 policy and coordinates differ from the three-agent comparison; keep the

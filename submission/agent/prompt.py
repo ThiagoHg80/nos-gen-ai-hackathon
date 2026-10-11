@@ -19,7 +19,7 @@ def build_messages(system: str, document: str) -> tuple:
     """Return (system instruction, user message).
 
     The document is sent as data between tags, never inside the
-    instructions, so text in it cannot pose as an instruction.
+    instructions. Tags do not prevent prompt injection by themselves.
     """
     if not document.endswith("\n"):
         document += "\n"
