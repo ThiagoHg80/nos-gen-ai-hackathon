@@ -16,7 +16,7 @@ The agent does not check, score or record its answers. That is the job of
 Run everything from `submission/`.
 
 ```
-python -m pip install PyMuPDF==1.27.2.3 langchain-core==1.6.9 langchain-google-genai==4.4.1 langchain-openai==1.7.0 pytest==9.1.1
+python -m pip install -r requirements.txt
 ```
 
 ## Models
@@ -34,8 +34,8 @@ python -m agent --provider local --out local_answer.txt
 ```
 
 `LLM_PROVIDER` and `LOCAL_LLM_URL` set the defaults of `--provider` and
-`--base-url`. Temperature is never sent, so each model uses its own default
-(Gemini 3 recommends keeping it). `--timeout` sets the seconds allowed per
+`--base-url`. Gemini uses temperature 0.0; local models use their
+own default. `--timeout` sets the seconds allowed per
 model call (default 300); raise it for a slow local model.
 
 ## Prompt
@@ -57,17 +57,16 @@ python -m agent --pdf other.pdf --out answer.txt
 ```
 
 `--pdf` defaults to `raw_data/document_to_anonymize.pdf`, `--out` to
-`submission/submission.txt`. Every run first extracts the PDF to
+`submission/submission.txt`. Every run, including `--dry-run`, first extracts the PDF to
 `submission/raw_uncensored_document.txt`.
 
 When the answer goes to `submission.txt` and you passed a different
-`--prompt`, that prompt is also copied into `prompt.txt`, so the two files
-always match.
+`--prompt`, that prompt is also copied into `prompt.txt`, to record the selected instruction. Verify the exact generating request
+and response before final delivery.
 
 No new answer file is written when the model call fails (it is not
 retried) or the answer is cut off (its `finish_reason` is not `STOP`). PDF
-extraction happens
-before the model call and may already have written raw text.
+extraction happens before the model call and may already have written raw text.
 
 Exit codes: `0` answer written, `1` model failure, `2` not run (empty prompt
 or no API key).
@@ -81,7 +80,7 @@ python -m benchmark.mask_diff raw_uncensored_document.txt submission.txt
 ```
 
 To score a model + prompt over the whole benchmark dataset, see the
-scorer section of `benchmark/README.md`.
+[benchmark scorer documentation](../benchmark/README.md#scorer).
 
 ## Files
 
@@ -96,7 +95,7 @@ scorer section of `benchmark/README.md`.
 ## Tests
 
 ```
-python -m pytest agent/tests NOS_Three_Agents -ra -o addopts="-p no:cacheprovider"
+python -m pytest agent/tests benchmark/tests NOS_Three_Agents -ra -o addopts="-p no:cacheprovider"
 ```
 
 The locally verified interpreter is Python 3.12.7. Use one virtual environment

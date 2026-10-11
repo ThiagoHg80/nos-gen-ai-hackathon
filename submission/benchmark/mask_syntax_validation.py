@@ -79,6 +79,34 @@ def validate(source: str, masked: str) -> dict:
     return {"valid": not problems, "problems": problems}
 
 
+def compare_word_counts(source: str, masked: str) -> int:
+    """Report per-line counts, ignoring blanks and normalising newlines.
+
+    This compatibility check accepts changed words and spacing. Use validate()
+    separately to enforce the masking syntax.
+    """
+    original = [ln for ln in source.splitlines() if ln.strip()]
+    answer = [ln for ln in masked.splitlines() if ln.strip()]
+    if not answer:
+        print("submission.txt is empty")
+        return 1
+    if len(original) != len(answer):
+        print(f"line count differs: {len(original)} vs {len(answer)}")
+        return 1
+    bad = 0
+    for number, (a, b) in enumerate(zip(original, answer), 1):
+        if len(a.split()) != len(b.split()):
+            bad += 1
+            print(f"line {number}: {len(a.split())} words -> "
+                  f"{len(b.split())}")
+            print(f"  original: {a.strip()}")
+            print(f"  answer:   {b.strip()}")
+    masked = sum(line.count("*") for line in answer)
+    print(f"{len(original) - bad} of {len(original)} lines aligned, "
+          f"{masked} asterisks")
+    return 1 if bad else 0
+
+
 def read(path) -> str:
     """Read exactly: no newline translation, trailing spaces kept."""
     return Path(path).read_bytes().decode("utf-8")

@@ -9,7 +9,7 @@ score it: use benchmark/ for that.
 Usage (from submission/):
     python -m agent                          # Gemini, writes submission.txt
     python -m agent --provider local         # llama.cpp on localhost:8080
-    python -m agent --prompt prompts/prompt02.txt
+    python -m agent --prompt prompts/prompt_v3_2.txt
     python -m agent --pdf input.pdf --out answer.txt
     python -m agent --dry-run                # show the prompt, no call
 

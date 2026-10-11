@@ -1,5 +1,6 @@
-"""Gated Rewrite Agent: one Gemini call masks the document, then a check
-decides whether the returned text is accepted. Run with `python -m agent`.
+"""One model call masks the document. Run with `python -m agent`.
+
+Formatting and detection quality are evaluated separately by benchmark/.
 """
 from pathlib import Path
 

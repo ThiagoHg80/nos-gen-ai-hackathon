@@ -1,9 +1,15 @@
 # JunctionX competition compliance review
 
-Reviewed on 2026-10-10 against the user-supplied
+Initially reviewed on 2026-10-10 against the user-supplied
 NOS - JunctionX Lisbon 2026.pdf, pages 2-5. This review covers repository
 structure, local changes, submission artifacts and the documented workflow.
 It is not a competition eligibility certification or a live-model evaluation.
+
+Maintenance update, 2026-10-11: 151 offline tests passed, one real-document
+check skipped; repository flake8 and whitespace checks passed. The original
+upstream main was fetched and matches local main at `c4995b0`. Of its 17
+files, 15 remain unchanged; only the required prompt/output contents differ,
+recorded in `be5dfcb`. Maintenance changed none of these base files.
 
 ## Explicit rules and local evidence
 
@@ -14,8 +20,8 @@ It is not a competition eligibility certification or a live-model evaluation.
 | Work inside submission/ | p.3 | New rules, privacy code, tests and documentation remain inside submission/. |
 | LLM detects sensitive data using context | p.2 | submission/agent implements a Gemini pipeline; tests can use stubs. Live quality has not been established here. |
 | One asterisk per anonymized word; preserve layout except empty lines | p.2 | Three-agent text model implements a provisional word/punctuation rule. Verify final candidate against source; privacy detection alone cannot check formatting. |
-| Keep supplied filenames and clean generated output | p.4 | submission.txt exists but is empty: BLOCKED for final delivery. It was not populated with fabricated content. |
-| Exact prompt that generated the output | p.4 | prompt.txt exists but is empty: BLOCKED for final delivery. Save the real prompt and output together when the team selects its final run. |
+| Keep supplied filenames and clean generated output | p.4 | submission.txt is nonempty as of 2026-10-11; commit be5dfcb records its addition. Exact model-response provenance remains unverified. |
+| Exact prompt that generated the output | p.4 | prompt.txt is nonempty and matches prompts/prompt_v3_2.txt as of 2026-10-11. Verify the exact generating request and output together before delivery. |
 | Include development code and setup/usage docs | pp.4-5 | Agent and three-agent workspace exist with READMEs. Optional privacy setup documented separately. |
 | Reference open-source packages | pp.2,5 | Privacy packages and model links documented in NOS_Three_Agents/README.md; review references for the other components before delivery. |
 | Open-source licence | p.5 | Root LICENSE is MIT. Preserve it. |
@@ -47,8 +53,9 @@ force-push over the team's history.
   not silently rewrite the submission or determine eligibility.
 - The brief does not explicitly resolve multi-prompt pipelines or deterministic
   rendering. The existing evidence table records those uncertainties.
-- A combined local test run stopped at collection because langchain_core is
-  missing from Python 3.12. This does not establish a defect in teammate code.
+- An earlier combined run stopped because langchain_core was missing. The
+  2026-10-11 combined suite includes agent, benchmark and three-agent tests
+  and passes in the current environment.
 - Root tutorial text is generic and includes older event details. Use the
   supplied JunctionX brief for event-specific requirements; preserve originals.
 

@@ -36,7 +36,7 @@ def api_key():
 def get_llm(provider: str, model: str = None,
             base_url: str = DEFAULT_LOCAL_URL,
             timeout: float = TIMEOUT_S) -> BaseChatModel:
-    """Temperature is never sent, so each model uses its own default."""
+    """Gemini uses temperature 0.0; local models use their own default."""
     model = model or DEFAULT_MODELS[provider]
     if provider == "gemini":
         from langchain_google_genai import ChatGoogleGenerativeAI
@@ -46,7 +46,7 @@ def get_llm(provider: str, model: str = None,
             raise ValueError(
                 "no GEMINI_API_KEY in the environment or submission/.env")
         return ChatGoogleGenerativeAI(
-            model=model, google_api_key=key, temperature= 0.0,
+            model=model, google_api_key=key, temperature=0.0,
             max_output_tokens=MAX_OUTPUT_TOKENS, timeout=timeout,
             max_retries=ATTEMPTS,  # Google SDK: total attempts
         )

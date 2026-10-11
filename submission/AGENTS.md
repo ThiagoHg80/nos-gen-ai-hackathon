@@ -8,6 +8,9 @@ is NOS - JunctionX Lisbon 2026.pdf, pages 2-5, supplied by the user.
 - Continue on team-portwineoverflow, as explicitly requested by the user.
   Do not create or switch branches without a new user instruction.
 - Never develop directly on main.
+- Preserve files inherited from the original main. Refactoring must only edit
+  team-added files. Do not edit prompt.txt or submission.txt during maintenance;
+  changes to delivery contents require a specific generation/delivery task.
 - Inspect git status and the relevant diff before editing or integrating.
   Preserve existing local changes and teammates' work.
 - Keep changes focused and reviewable. Stage only files belonging to the task.

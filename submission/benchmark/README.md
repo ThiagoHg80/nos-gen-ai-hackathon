@@ -26,8 +26,8 @@ answer with `ground_truth/`, word by word (word ids from
 `mask_diff.py`). Run from `submission/`:
 
 ```
-python -m benchmark.scorer --prompt prompts/prompt01.txt            # Gemini
-python -m benchmark.scorer --provider local --prompt prompts/prompt01.txt
+python -m benchmark.scorer --prompt prompts/prompt_v3_2.txt            # Gemini
+python -m benchmark.scorer --provider local --prompt prompts/prompt_v3_2.txt
 python -m benchmark.scorer --docs doc_001 doc_041 --limit 1
 ```
 

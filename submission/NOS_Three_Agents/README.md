@@ -32,11 +32,16 @@ not determine an agent's answer.
 
 ## Current status
 
-The last recorded local verification used **Python 3.12.7**:
-**132 tests passed and one optional real-document check was skipped**.
+The environment record below describes an earlier verification on
+**Python 3.12.7**, with **132 tests passed and one optional check skipped**.
 Repository flake8, pip check, source hashes, and fresh PDF extraction passed.
 No Gemini requests were made during that verification.
 See [verified_environment.json](evaluation/verified_environment.json).
+
+Maintenance verification on 2026-10-11 passed **151 offline tests**, with
+one explicitly selected real-document check skipped. Repository flake8 and
+whitespace checks passed. No model requests were made. This does not refresh
+the historical environment record or the benchmark freeze.
 
 The repository also contains earlier artifacts labelled LIVE and three Agent A
 rows in [benchmark_results.csv](evaluation/benchmark_results.csv), using the
@@ -50,10 +55,17 @@ that predates those LIVE artifacts; its statements about zero live runs and
 for the corresponding evidence. Do not mix results from different freezes.
 
 The provided [submission.txt](../submission.txt) and [prompt.txt](../prompt.txt)
-were empty at the latest review. The three-agent workspace does not populate
-them automatically. Tests passing does not mean the competition entry is ready.
+are nonempty as of 2026-10-11. Git records their addition in commit `be5dfcb`;
+the prompt matches `../prompts/prompt_v3_2.txt`. Their exact generating
+request/response provenance has not been verified by this maintenance review.
+The three-agent workspace does not populate them automatically. Tests passing does not mean the competition entry is ready.
 
 ## Engineering rationale and development history
+
+PDF extraction and newline canonicalisation live in `prepare_source.py`,
+which is their only caller. The former `shared/extraction.py` was consolidated
+there to keep preparation logic together. Historical freeze manifests retain
+the old path; live runs remain blocked until an intentional new freeze.
 
 The team's working notes describe a deliberate engineering process: refine
 the baseline prompt, compare alternative architectures, implement a small set
@@ -126,7 +138,7 @@ or privacy without supporting measurements and a recorded team decision.
 | LIVE | Artifacts record a real-provider execution path; the processed data may still be fictional |
 | Final submission | The selected actual model/API result and its exact prompt; neither a mock fixture nor a process report |
 
-?Fictional? describes data provenance. ?LIVE? describes the execution mode.
+`Fictional` describes data provenance. `LIVE` describes the execution mode.
 They must not be used interchangeably.
 
 The draft reference explicitly records no human reviewer. The synthetic
@@ -144,8 +156,8 @@ of brainstorming models, team members or the development history.
 The working PDF includes prompt experiments and an AI-generated README draft.
 They inform this explanation but do not override the official brief or prove
 that proposed features exist. Its legal/privacy prompt wording is a design
-proposal, not a compliance certification. UI/UX and production deployment
-were proposed next steps; they are not implemented by the code reviewed here.
+proposal, not a compliance certification. A static interface exists at `../interface/index.html`. Its presence does not
+establish a deployed service; production deployment remains unverified.
 
 Do not copy credentials from working notes into documentation. If credentials
 were shared in a planning document, revoke and replace valid ones through
@@ -193,8 +205,7 @@ Paths below are relative to the repository root.
 | `submission/COMPETITION_COMPLIANCE.md` | Requirements review, security findings and remaining delivery steps |
 
 The synthetic dataset uses a benchmark-specific masking policy. It is not
-NOS's hidden reference. Some older component documentation mentions
-`original/`; the directory present in this checkout is `input/`.
+NOS's hidden reference. Its dataset is documented in [the benchmark README](../benchmark/README.md).
 
 ## Environment and dependencies
 
@@ -255,7 +266,7 @@ For optional multilingual privacy checks:
 To reproduce the separate agent's recorded top-level integrations:
 
 ```powershell
-& $py -m pip install langchain-core==1.6.9 langchain-google-genai==4.4.1 langchain-openai==1.7.0
+& $py -m pip install -r (Join-Path $submission "requirements.txt")
 & $py -m pip check
 ```
 
@@ -271,14 +282,14 @@ From `$workspace`, run the three-agent suite:
 & $py -B -I -X utf8 -m pytest -ra
 ```
 
-From `$submission`, run both suites together:
+From `$submission`, run all three component suites together:
 
 ```powershell
 Set-Location $submission
 $env:LANGSMITH_TRACING = "false"
 $env:LANGCHAIN_TRACING_V2 = "false"
 $env:GX_ANALYTICS_ENABLED = "false"
-& $py -B -X utf8 -m pytest agent/tests NOS_Three_Agents -ra -o addopts="-p no:cacheprovider"
+& $py -B -X utf8 -m pytest agent/tests benchmark/tests NOS_Three_Agents -ra -o addopts="-p no:cacheprovider"
 ```
 
 The separate agent imports its package from `submission/`, so this combined
@@ -347,40 +358,11 @@ not automatically to the separate LangChain agent.
 
 ### Separate single-call agent
 
-Run its commands from `$submission`. Its `prompt.txt` must be nonempty.
-The current checkout does not contain the example `prompts/` directory
-mentioned in older documentation. Select a reviewed prompt file that actually
-exists; do not pass an unexpanded three-agent template as its system prompt.
-
-```powershell
-Set-Location $submission
-& $py -B -X utf8 -m agent --help
-```
-
-After reviewing a prompt, substitute its actual path below:
-
-```powershell
-& $py -B -X utf8 -m agent --provider gemini --prompt "path\to\reviewed_prompt.txt" --out "candidate_review.txt"
-```
-
-A local-server run requires a separately installed and running
-OpenAI-compatible server. This repository does not install a local model.
-Check the exact endpoint before using it:
-
-```powershell
-& $py -B security_preflight.py --local-url "http://localhost:8080/v1"
-& $py -B -X utf8 -m agent --provider local --base-url "http://localhost:8080/v1" --prompt "path\to\reviewed_prompt.txt" --out "candidate_review.txt"
-```
-
-The separate agent always extracts the PDF to
-`submission/raw_uncensored_document.txt`, including during `--dry-run`.
-Dry-run also prints the prompt and part of the input. A failed model call
-does not write a new answer, but extraction may already have written raw text.
-
-Its default output is `submission.txt`. When writing there with another
-prompt file, it also copies the instruction text into `prompt.txt`.
+Run from `$submission`; see [the agent README](../agent/README.md) for
+providers, prompt loading, extraction side effects, commands and exit codes.
+Reviewed prompt versions are stored in `submission/prompts/`.
 Use a separate `--out` path while experimenting to preserve delivery files.
-Its key file is `submission/.env`, unlike the three-agent workspace's
+The single-call agent uses `submission/.env`; the three-agent runner uses
 `submission/NOS_Three_Agents/.env`.
 
 ## Privacy and security validation
@@ -517,10 +499,10 @@ Re-score a saved index without a model call, using new output names:
 ```
 
 Replace SELECTED_INDEX with an existing reviewed index.
-The 50-document dataset under `submission/benchmark/` is a separate
-benchmark-specific resource. This checkout does not contain executable
-`benchmark.mask_diff`, `benchmark.mask_syntax_validation` or `benchmark/tests`;
-older commands naming them are not runnable here.
+The separate 50-document dataset, syntax validator, word diff and scorer
+are documented in [the benchmark README](../benchmark/README.md). Their
+policy and coordinates differ from the three-agent comparison; keep the
+corresponding references and results together.
 
 ## Competition delivery
 
@@ -530,24 +512,10 @@ events. Detailed evidence and ambiguities are recorded in
 [evidence_table.md](references/evidence_table.md) and
 [COMPETITION_COMPLIANCE.md](../COMPETITION_COMPLIANCE.md).
 
-Before final delivery:
-
-1. Select a real model-generated output; preserve the exact prompt and run
-   provenance. Never substitute MOCK output or test fixtures for a real entry.
-2. Review one asterisk per anonymized word, preserved meaning/layout, removed
-   empty lines and potential missed or excessive masking.
-3. Populate the provided `submission/submission.txt` with only the required
-   model/API output as returned by the system, without explanations or wrappers.
-   Populate `submission/prompt.txt` with the exact generating prompt.
-   Do not rename, move or delete either file.
-4. Include development code, clear setup/usage documentation, library references
-   and the open-source licence. Confirm a public team fork.
-5. Run tests and repository flake8; inspect the intended diff.
-6. Commit with each contributor's own identity and preserve team history.
-7. After team approval, push the working branch and open a PR to `main` in
-   `nosportugal/nos-gen-ai-hackathon`.
-8. Register the PR link on JunctionX before the challenge closes and prepare
-   a pitch of at most two minutes.
+Follow the [final delivery gate](../COMPETITION_COMPLIANCE.md#final-delivery-gate)
+for provenance review, required files, checks, contributor identity and
+authorized publication. Maintenance must preserve the original repository
+files, including delivery contents; see [AGENTS.md](../AGENTS.md).
 
 Three organiser workflows assess output, prompt and Python lint.
 Missing delivery files may make a workflow skip and still appear green:
@@ -558,20 +526,9 @@ The rubric allocates 40% to implementation, 30% to collaboration,
 
 ## Collaboration
 
-Continue on `team-portwineoverflow` as agreed by this team.
-Never develop directly on `main`. The brief does not prohibit additional
-branches, but this task's agreed workflow remains on the current branch.
-
-Inspect `git status` and diffs before editing, staging or integrating.
-Use small commits organized by purpose, with English titles and explanations
-of significant decisions and validation. Preserve teammates' edits.
-Stage explicit filenames rather than unrelated changes.
-
-Use merge-based synchronization after saving reviewed local work.
-Do not squash, rebase shared history, force-push, discard changes, or change
-another contributor's identity. These precautions preserve the collaboration
-evidence assessed by the competition.
-The working instructions are in [AGENTS.md](../AGENTS.md).
+[AGENTS.md](../AGENTS.md) is the source for branch, preservation, identity,
+review and merge rules. Continue on `team-portwineoverflow`; do not alter
+original-main files during refactoring.
 
 ## Troubleshooting
 

@@ -20,7 +20,7 @@ breaks the rules at (masked is null) is counted as not masked and also
 listed under "unaligned". runs/<sweep>/summary.json adds up all runs.
 
 Usage (from submission/):
-    python -m benchmark.scorer --prompt prompts/prompt01.txt
+    python -m benchmark.scorer --prompt prompts/prompt_v3_2.txt
     python -m benchmark.scorer --provider local --limit 5
     python -m benchmark.scorer --docs doc_001 doc_007
 """
