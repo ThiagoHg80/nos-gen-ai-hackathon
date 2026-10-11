@@ -14,6 +14,7 @@ DEFAULT_MODELS = {"gemini": "gemini-3.6-flash", "local": "local"}
 DEFAULT_LOCAL_URL = os.environ.get("LOCAL_LLM_URL", "http://localhost:8080/v1")
 MAX_OUTPUT_TOKENS = 16384
 TIMEOUT_S = 300
+ATTEMPTS = 1  # no retry: a failed call usually fails again
 KEY_NAMES = ("GEMINI_API_KEY", "GOOGLE_API_KEY")
 
 
@@ -33,7 +34,8 @@ def api_key():
 
 
 def get_llm(provider: str, model: str = None,
-            base_url: str = DEFAULT_LOCAL_URL) -> BaseChatModel:
+            base_url: str = DEFAULT_LOCAL_URL,
+            timeout: float = TIMEOUT_S) -> BaseChatModel:
     """Temperature is never sent, so each model uses its own default."""
     model = model or DEFAULT_MODELS[provider]
     if provider == "gemini":
@@ -45,15 +47,16 @@ def get_llm(provider: str, model: str = None,
                 "no GEMINI_API_KEY in the environment or submission/.env")
         return ChatGoogleGenerativeAI(
             model=model, google_api_key=key, temperature= 0.0,
-            max_output_tokens=MAX_OUTPUT_TOKENS, timeout=TIMEOUT_S,
-            max_retries=2,  # one retry
+            max_output_tokens=MAX_OUTPUT_TOKENS, timeout=timeout,
+            max_retries=ATTEMPTS,  # Google SDK: total attempts
         )
     if provider == "local":
         from langchain_openai import ChatOpenAI
 
         return ChatOpenAI(
             model=model, base_url=base_url, api_key="none",
-            max_tokens=MAX_OUTPUT_TOKENS, timeout=TIMEOUT_S, max_retries=1,
+            max_tokens=MAX_OUTPUT_TOKENS, timeout=timeout,
+            max_retries=ATTEMPTS - 1,  # OpenAI client: retries after the first
         )
     raise ValueError(f"unknown provider: {provider}")
 
