@@ -1,5 +1,7 @@
 # Project working rules
 
+[Documentation index](00_INDEX.md)
+
 These instructions apply to all work under submission/. The reviewed source
 is NOS - JunctionX Lisbon 2026.pdf, pages 2-5, supplied by the user.
 
@@ -60,3 +62,5 @@ is NOS - JunctionX Lisbon 2026.pdf, pages 2-5, supplied by the user.
   Report skips, failures and missing dependencies accurately.
 - Never modify frozen sources, hashes, prompts or benchmark artifacts merely
   to make tests pass.
+
+[Documentation index](00_INDEX.md)

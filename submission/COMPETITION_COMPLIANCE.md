@@ -1,5 +1,7 @@
 # JunctionX competition compliance review
 
+[Documentation index](00_INDEX.md) | [Technical guide](NOS_Three_Agents/README.md)
+
 Initially reviewed on 2026-10-10 against the user-supplied
 NOS - JunctionX Lisbon 2026.pdf, pages 2-5. This review covers repository
 structure, local changes, submission artifacts and the documented workflow.
@@ -16,19 +18,37 @@ recorded in `be5dfcb`. Maintenance changed none of these base files.
 | Requirement | Source | Local evidence / remaining work |
 |---|---|---|
 | One public team fork; work outside main | p.3 | Current branch: team-portwineoverflow. Remote visibility and collaborator access still need verification. |
-| Preserve history; each member commits from their account | p.3 | Recent history includes team PR merges. No commits or pushes made by this review. Verify contributor identities before delivery. |
+| Preserve history; each member commits from their account | p.3 | Team PR merges and maintenance commits are recorded in Git. Verify contributor identities before delivery. |
 | Work inside submission/ | p.3 | New rules, privacy code, tests and documentation remain inside submission/. |
 | LLM detects sensitive data using context | p.2 | submission/agent implements a Gemini pipeline; tests can use stubs. Live quality has not been established here. |
 | One asterisk per anonymized word; preserve layout except empty lines | p.2 | Three-agent text model implements a provisional word/punctuation rule. Verify final candidate against source; privacy detection alone cannot check formatting. |
 | Keep supplied filenames and clean generated output | p.4 | submission.txt is nonempty as of 2026-10-11; commit be5dfcb records its addition. Exact model-response provenance remains unverified. |
 | Exact prompt that generated the output | p.4 | prompt.txt is nonempty and matches prompts/prompt_v3_2.txt as of 2026-10-11. Verify the exact generating request and output together before delivery. |
 | Include development code and setup/usage docs | pp.4-5 | Agent and three-agent workspace exist with READMEs. Optional privacy setup documented separately. |
-| Reference open-source packages | pp.2,5 | Privacy packages and model links documented in NOS_Three_Agents/README.md; review references for the other components before delivery. |
+| Reference open-source packages | pp.2,5 | Individual framework/package references and their roles are documented in NOS_Three_Agents/README.md. |
 | Open-source licence | p.5 | Root LICENSE is MIT. Preserve it. |
 | Automatic evaluation and flake8 | p.5 | Three organiser workflows exist. Repository flake8 passed locally before these adjustments. Missing files can still produce skipped green checks. |
 | Final PR to original repository main | p.4 | Not created by this review. Confirm target repository and include all required artifacts. |
 | JunctionX registration with PR link | p.4 | External/manual step, not verified. |
 | Pitch at most two minutes | p.5 | Prepare and time the team's pitch. |
+
+## Documentation placement
+
+Rechecked against the [official NOS brief](https://lisbon.hackjunction.com/assets/challenges/NOS%20-%20JunctionX%20Lisbon%202026.pdf),
+pages 3-5, on 2026-10-11. Page 3 requires work inside `submission/`;
+page 5 requires clear README, usage and setup documentation. It does not
+prescribe an index filename or a document count. Keeping
+[00_INDEX.md](00_INDEX.md) beside the preserved submission README is our
+organisation choice, consistent with those requirements.
+
+Page 4 reserves `submission.txt` for the system output and `prompt.txt`
+for its exact prompt. Neither is a documentation destination. The original
+READMEs remain unchanged under the team's preservation rule. The index
+contains navigation; the project README owns shared setup, interface usage,
+design and library references. Component READMEs own their command-specific
+behaviour. This review owns delivery checks and unresolved risks. Frozen
+policies and experiment reports remain evidence, rather than current setup
+instructions.
 
 ## Git clarification
 
@@ -53,9 +73,6 @@ force-push over the team's history.
   not silently rewrite the submission or determine eligibility.
 - The brief does not explicitly resolve multi-prompt pipelines or deterministic
   rendering. The existing evidence table records those uncertainties.
-- An earlier combined run stopped because langchain_core was missing. The
-  2026-10-11 combined suite includes agent, benchmark and three-agent tests
-  and passes in the current environment.
 - Root tutorial text is generic and includes older event details. Use the
   supplied JunctionX brief for event-specific requirements; preserve originals.
 
@@ -95,20 +112,10 @@ enterprise security certification.
 
 ### Run the optional preflight
 
-From the repository root, using the interpreter with optional privacy
-dependencies installed:
-
-```powershell
-python -B submission/security_preflight.py
-python -B submission/security_preflight.py --local-url http://localhost:8080/v1
-python -B submission/security_preflight.py --document submission/submission.txt
-```
-
-Stage only the reviewed task files before the indexed scan. It reads the index,
-not unstaged edits. Review exit codes: 0 no configured findings, 1 findings need
-review, 2 check could not complete. It performs no model/API call and does not
-modify documents. Named entities intentionally preserved by the challenge may
-be false positives; resolve them through review without silently altering output.
+Use the [preflight instructions](NOS_Three_Agents/README.md#optional-read-only-preflight)
+for commands, scope and exit codes. Findings require review; the tool does
+not rewrite output or establish anonymity. Candidate-specific findings
+are recorded below.
 
 Validation of additive measures: 122 offline tests passed, one real-document
 check skipped unless explicitly selected. The indexed secret scan found no
@@ -151,3 +158,6 @@ content; that design choice is not a general anonymity guarantee.
 **Status: candidate privacy not approved.** Resolve the four contextual
 findings and review uncovered categories before delivery. The freeze is
 a separate task and was not modified by this review.
+
+For execution commands, return to the [technical guide](NOS_Three_Agents/README.md)
+or choose a task from the [documentation index](00_INDEX.md).

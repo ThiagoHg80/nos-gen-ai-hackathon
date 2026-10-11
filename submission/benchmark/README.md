@@ -1,9 +1,15 @@
 # NOS — Synthetic Anonymization Benchmark (50 documents)
 
+[Documentation index](../00_INDEX.md) | [Agent usage](../agent/README.md)
+
 - `input/`: 50 original UTF-8 `.txt` documents (40 pt-PT, 10 English).
 - `ground_truth/`: corresponding reference documents with one `*` per whitespace-delimited sensitive token; whitespace-only lines removed.
 - `annotations.json`: sensitive source spans with Python character offsets `[start,end)` and category labels.
 - All personal identifiers are fictional/test values; names and institution names may resemble real entities by coincidence.
+
+For the separate v3.4 proposal on the challenge document, use
+[its dataset guide](real_document/README.md). It has a different reference
+policy; do not combine its results with this 50-document dataset.
 
 ## Policy used for the reference
 Names of individuals (including staff and relatives), individual names repeated in shorter form, contact addresses, telephone numbers, personal email addresses, tax identifiers, social media handles and IBANs are masked. Institutional names, generic city mentions, political party names without a personal identifier, occupations, medical diagnoses, ordinary processing dates, monetary amounts, case references and quoted instructions are preserved. Explicit membership-person links are broken by masking the person's name, not the party. This is a **benchmark-specific policy**, not a verified interpretation of the NOS hidden reference.
@@ -79,3 +85,7 @@ Input documents contain 174-258 whitespace-delimited words.
 Review whether normalisation belongs at the scorer boundary or whether
 checkout configuration should preserve LF. Reference data remains unchanged;
 this discrepancy does not establish a model-quality failure.
+
+After reviewing validation results, use the
+[delivery checklist](../COMPETITION_COMPLIANCE.md#final-delivery-gate).
+Return to the [documentation index](../00_INDEX.md) for other tasks.

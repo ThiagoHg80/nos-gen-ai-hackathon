@@ -1,5 +1,7 @@
 # Evidence table
 
+[Documentation index](../../00_INDEX.md) | [Delivery review](../../COMPETITION_COMPLIANCE.md)
+
 Compiled 2026-10-10. File identities are in `evidence_manifest.json`.
 
 Status meanings: VERIFIED = stated in the cited source; INFERRED =
@@ -71,3 +73,5 @@ anonymize.
 The hidden `evaluation.py`, `prompt_eval.py` and `target.txt`; workflow
 logs (they need a GitHub login); the Junction platform; Discord. Nothing
 about the hidden scripts is inferred here.
+
+[Documentation index](../../00_INDEX.md) | [Delivery review](../../COMPETITION_COMPLIANCE.md)

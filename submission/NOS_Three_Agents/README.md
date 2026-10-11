@@ -14,6 +14,8 @@ single-call agent, a synthetic benchmark dataset, and optional privacy and
 security checks. These components remain distinct so evaluation code does
 not determine an agent's answer.
 
+[Documentation index](../00_INDEX.md) links to the component guides and review records.
+
 ## Contents
 
 - [Current status](#current-status)
@@ -33,27 +35,20 @@ not determine an agent's answer.
 
 ## Current status
 
-The historical environment record below describes an earlier verification on
-**Python 3.12.7**, with **132 tests passed and one optional check skipped**.
-Repository flake8, pip check, source hashes, and fresh PDF extraction passed.
-No Gemini requests were made during that verification.
-See [verified_environment.json](evaluation/verified_environment.json).
+Pre-pull maintenance verification (2026-10-11): **151 offline tests passed,
+one real-document check skipped**, with repository flake8 and whitespace
+checks passing. No model requests were made; this does not refresh the freeze.
+For unresolved delivery checks, see the
+[current review](../COMPETITION_COMPLIANCE.md#review-findings) and
+[candidate privacy status](../COMPETITION_COMPLIANCE.md#current-candidate-privacy-review).
 
-Maintenance verification on 2026-10-11 passed **151 offline tests**, with
-one real-document check skipped because no document was explicitly selected.
-Repository flake8 and whitespace checks passed. No model requests were made. This does not refresh
-the historical environment record or the benchmark freeze.
-
-The repository also contains earlier artifacts labelled LIVE and three Agent A
-rows in [benchmark_results.csv](evaluation/benchmark_results.csv), using the
-recorded model identifier `gemini-3.8-flash`. These are historical results,
-not results of the latest offline verification or the current freeze.
-Their metrics use a provisional reference, not NOS's hidden evaluation.
-
-[comparison_report.md](evaluation/comparison_report.md) is an earlier snapshot
-that predates those LIVE artifacts; its statements about zero live runs and
-98 tests are historical. Consult per-run artifacts and the environment record
-for the corresponding evidence. Do not mix results from different freezes.
+**Historical evidence:** [verified_environment.json](evaluation/verified_environment.json)
+records an earlier Windows/Python 3.12.7 verification with 132 passing tests
+and one skip. [Live results](evaluation/benchmark_tables.md) record three
+Agent A trials with model identifier `gemini-3.8-flash`, against a provisional
+reference. [Mock results](evaluation/mock_benchmark_results.csv) exercise
+the pipeline only. These records describe their own configurations, not
+the current code's model quality or NOS's hidden evaluation.
 
 The provided [submission.txt](../submission.txt) and [prompt.txt](../prompt.txt)
 are nonempty. The prompt matches `../prompts/prompt_v3_2.txt`. The exact
@@ -73,6 +68,7 @@ request and response; commit authorship does not establish that provenance.
 | v3 | Defines the masking policy and word/punctuation rules |
 | v3.1 | Adds short words such as de, da, do and e to the employer-name instruction |
 | v3.2 | Adds an N-words-to-N-asterisks rule and a five-word employer example |
+| v3.4 | Proposes masking who and when while retaining clinical content; see the [policy comparison](../benchmark/real_document/README.md#what-v34-adds-to-v32) |
 
 `submission/prompt.txt` matches
 [the v3.2 prompt](../prompts/prompt_v3_2.txt). The word-count checker confirms
@@ -80,6 +76,12 @@ request and response; commit authorship does not establish that provenance.
 character counts, not independently verified sensitive-word detections.
 Alignment does not prove unchanged words, spacing, correct masking or anonymity.
 No intermediate v3/v3.1 measurements are established by these prompt files.
+
+The pull added a separate [v3.4 prompt](../prompts/prompt_v3_4.txt),
+a proposed reference and a saved answer in
+[benchmark/real_document](../benchmark/real_document/README.md).
+They do not replace the v3.2 delivery files. Use that guide for the
+policy differences, reference assumptions and evaluation commands.
 
 The single-call agent defaults to `gemini-3.6-flash` and requests temperature
 0.0; `--model` can override that name. Its current configuration does not
@@ -203,6 +205,9 @@ comparison again.
 | The page opens but cannot load a text file | Use the HTTP address above instead of opening the HTML file directly with `file://`. Confirm that both text files exist in `submission` and are not empty. |
 | The page reports different line or word counts | The files loaded, but their structure does not align. Review the saved output and the [syntax validation instructions](../benchmark/README.md); restarting the server does not repair an output file. |
 
+For generation commands, continue with [agent usage](../agent/README.md#run).
+For other tasks, return to the [documentation index](../00_INDEX.md).
+
 ## Engineering rationale and development history
 
 PDF extraction and newline canonicalisation live in `prepare_source.py`,
@@ -256,6 +261,19 @@ implementation of the single-call path; optional checks remain independent.
   at the cost of another inference call and additional failure modes.
 - **C:** controls rendering in Python, but depends on correct model spans and
   an unresolved interpretation of the final-output submission requirement.
+
+B's validator computes a deterministic rendering to check the model's
+second-stage output. That extra call retains a model-written candidate;
+it does not add a rendering capability absent from C. A's rewrite is
+checked after generation, while B and C validate decision categories and
+locations before rendering. Correct spans do not establish complete
+sensitive-data detection.
+
+A is the simpler baseline for a complete model response. Before choosing
+B or C for delivery, clarify whether multiple prompts and deterministic
+post-processing meet the exact-prompt/output requirements. Three Agent A
+trials on one document, using a provisional reference, do not establish
+general superiority over the other architectures.
 
 These are architectural trade-offs. Do not claim that C was selected, that
 direct rewriting always failed, or that any design guarantees 100% fidelity
@@ -360,8 +378,55 @@ transitive dependency lock. The recorded checks were performed in the existing
 local environment, not a newly provisioned clean machine. Linux/macOS and
 other Python versions have not been verified by this check.
 
-### Create a local environment
+### Shared setup for Windows and Linux
 
+The Python implementation uses portable paths and standard networking.
+Local execution has been verified on Windows with Python 3.12.7.
+Linux execution has not been verified; portability is an implementation
+assessment, not a completed Linux test run. Dependency installation must
+succeed on the target platform before running the commands below.
+
+Use Python 3.12 and one virtual environment for installation and execution.
+Run these commands from `submission/`. They install the single-call agent,
+benchmark, tests and lint dependencies. Optional privacy dependencies remain
+separate; see [privacy and security validation](#privacy-and-security-validation).
+
+Windows PowerShell:
+
+```powershell
+python -m venv .venv
+$py = (Resolve-Path ".venv/Scripts/python.exe").Path
+& $py -m pip install -r requirements.txt
+& $py -B -m agent --help
+& $py -B -m pytest agent/tests benchmark/tests NOS_Three_Agents -ra -o 'addopts=-q -p no:cacheprovider'
+```
+
+Linux shell:
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python -B -m agent --help
+.venv/bin/python -B -m pytest agent/tests benchmark/tests NOS_Three_Agents -ra -o 'addopts=-q -p no:cacheprovider'
+```
+
+Some privacy tests skip without optional packages or an explicitly selected
+document. Inspect the test summary. The interface needs an HTTP server;
+opening its HTML file directly cannot load the saved text files.
+
+Git checkout line endings can affect exact-byte validation on either system.
+The experimental live runner also checks the recorded Python version and file
+hashes. Privacy findings and freeze updates remain separate review tasks;
+these setup commands do not resolve them.
+
+After this setup, continue with [model configuration](../agent/README.md#models),
+then [prompt and execution](../agent/README.md#prompt).
+For an existing saved output, use the [interface guide](#view-the-saved-output).
+Return to the [documentation index](../00_INDEX.md) to choose another task.
+
+### Create the three-agent experimental environment
+
+For the frozen three-agent experiments, use this separate setup.
 Open PowerShell at the repository root. `python` must resolve to Python
 3.12.7; check it first. If necessary, replace it with the full path to that
 interpreter. Do not copy the terminal's `PS ...>` prefix.
@@ -529,6 +594,7 @@ From `$submission`:
 ```powershell
 Set-Location $submission
 & $py -B security_preflight.py
+& $py -B security_preflight.py --local-url http://localhost:8080/v1
 & $py -B security_preflight.py --document "candidate_review.txt"
 ```
 
@@ -628,10 +694,8 @@ Replace SELECTED_INDEX with an existing reviewed index.
 <!-- Review the exact-read CRLF/LF contract in benchmark/scorer.py. -->
 <p style="color: #c62828;"><strong>🔴 CRLF/LF mismatch requires review before interpreting syntax results.</strong></p>
 
-The 50 references in the inspected Windows checkout contain CRLF.
-The scorer preserves those bytes, while the validator rejects CR.
-They fail the exact-byte check and pass after newline translation.
-See [the benchmark review note](../benchmark/README.md#review-required-benchmark-line-endings).
+The mismatch and its observed validation results are documented in
+[the benchmark review note](../benchmark/README.md#review-required-benchmark-line-endings).
 
 The separate 50-document dataset, syntax validator, word diff and scorer
 are documented in [the benchmark README](../benchmark/README.md). Their
@@ -682,20 +746,11 @@ original-main files during refactoring.
 
 ## Limitations and references
 
-This is a hackathon prototype, not a certified enterprise data-loss prevention
-service. Detection covers a limited set of entities/languages/regions.
-It does not guarantee identification of national IDs, bank accounts,
-credentials in every format, health details, indirect identifiers or all
-contextual personal information.
-
-Prompt tags and instruction separation are useful but do not guarantee
-resistance to prompt injection. Provisional labels and historical high metrics
-are not official scores. Model availability, billing and output quality must
-be verified for the actual authorized run.
-
-No changes in this workspace establish production encryption, access
-control, retention, provider approval or incident response.
-Use fictional challenge/synthetic data and review deployment separately.
+This prototype has limited detection coverage. Structural checks and
+provisional benchmark scores do not establish anonymity or official
+eligibility. See [privacy check behaviour](#privacy-and-security-validation)
+and the [risk review](../COMPETITION_COMPLIANCE.md#additive-security-measures-and-remaining-risks)
+for coverage, false findings, prompt injection and deployment limitations.
 
 Referenced tools:
 
@@ -714,3 +769,5 @@ Referenced tools:
 
 The repository carries the [MIT licence](../../LICENSE). Preserve the licence
 and upstream notices; third-party packages retain their own licences.
+
+[Back to the documentation index](../00_INDEX.md).

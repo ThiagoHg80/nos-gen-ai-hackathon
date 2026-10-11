@@ -1,5 +1,7 @@
 # Agent
 
+[Documentation index](../00_INDEX.md) | [Project setup](../NOS_Three_Agents/README.md#shared-setup-for-windows-and-linux)
+
 The agent asks one model call to return the document with personal data masked.
 It checks the finish reason, but does not verify masking or formatting. The
 answer is written exactly as returned, by default to `submission.txt`. The
@@ -15,11 +17,13 @@ new model calls and records their results.
 
 ## Setup
 
-Run everything from `submission/`.
-
-```
-python -m pip install -r requirements.txt
-```
+For first-time installation on Windows or Linux, follow the
+[shared setup](../NOS_Three_Agents/README.md#shared-setup-for-windows-and-linux).
+Run the commands below from `submission/` with that environment's interpreter.
+The examples use `python` as shorthand: in the PowerShell setup, replace
+`python` with `& $py`; on Linux, use `.venv/bin/python`.
+Then configure [the model](#models), check [the prompt](#prompt), and
+[run the agent](#run).
 
 ## Models
 
@@ -112,3 +116,7 @@ optional privacy requirements, recorded checks and competition delivery
 instructions are in [the project README](../NOS_Three_Agents/README.md).
 Replace example prompt paths with actual reviewed files. The preflight is
 optional and does not establish anonymity or validate document formatting.
+
+After generation, follow [answer validation](#evaluate-an-answer), then
+[inspect the saved comparison](../NOS_Three_Agents/README.md#view-the-saved-output).
+Return to the [documentation index](../00_INDEX.md) for other tasks.
