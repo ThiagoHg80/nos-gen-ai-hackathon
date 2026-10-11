@@ -13,7 +13,7 @@ from . import SUBMISSION
 DEFAULT_MODELS = {"gemini": "gemini-3.6-flash", "local": "local"}
 DEFAULT_LOCAL_URL = os.environ.get("LOCAL_LLM_URL", "http://localhost:8080/v1")
 MAX_OUTPUT_TOKENS = 16384
-TIMEOUT_S = 120
+TIMEOUT_S = 300
 KEY_NAMES = ("GEMINI_API_KEY", "GOOGLE_API_KEY")
 
 
@@ -44,7 +44,7 @@ def get_llm(provider: str, model: str = None,
             raise ValueError(
                 "no GEMINI_API_KEY in the environment or submission/.env")
         return ChatGoogleGenerativeAI(
-            model=model, google_api_key=key, temperature=None,
+            model=model, google_api_key=key, temperature= 0.0,
             max_output_tokens=MAX_OUTPUT_TOKENS, timeout=TIMEOUT_S,
             max_retries=2,  # one retry
         )
@@ -67,4 +67,6 @@ def answer_text(message) -> str:
     finish = message.response_metadata.get("finish_reason")
     if str(finish).upper() != "STOP":  # Gemini "STOP", OpenAI "stop"
         raise RuntimeError(f"finish_reason={finish} (answer not complete)")
-    return message.text  # text blocks only, no thinking
+    text = message.text  # text blocks only, no thinking
+    # langchain-core < 1.0 (Python 3.9) has text() as a method.
+    return text if isinstance(text, str) else text()
