@@ -12,7 +12,7 @@ The original repository [README](../README.md) and
 | Install and run the single-call agent | [Agent README](agent/README.md) |
 | Understand architectures, shared setup and optional checks | [Project README](NOS_Three_Agents/README.md) |
 | Read the team's technical reasoning | [Design rationale](NOS_Three_Agents/README.md#engineering-rationale-and-development-history) |
-| Compare original and saved output in the browser | [Interface instructions](NOS_Three_Agents/README.md#view-the-saved-output) |
+| Open and use the interface for the first time | [Step-by-step interface guide](NOS_Three_Agents/README.md#view-the-saved-output) |
 | Validate syntax or score the synthetic dataset | [Benchmark README](benchmark/README.md) |
 | Review the CRLF/LF discrepancy | [Benchmark review note](benchmark/README.md#review-required-benchmark-line-endings) |
 | Check delivery requirements and remaining risks | [Competition review](COMPETITION_COMPLIANCE.md) |

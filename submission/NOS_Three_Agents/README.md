@@ -102,24 +102,106 @@ commands, use [the agent README](../agent/README.md).
 
 ### View the saved output
 
-From the repository root:
+This guide opens the saved comparison in a browser. You only need Python 3
+and a browser; no API key or additional Python packages are needed. The
+interface displays saved files and does not generate a new masked document.
+
+#### 1. Download and locate the project
+
+If you already have the project, use your existing folder. Otherwise, open
+[the team branch](https://github.com/ThiagoHg80/nos-gen-ai-hackathon/tree/team-portwineoverflow),
+select **Code > Download ZIP**, and extract the ZIP before continuing.
+Use the team branch because the original `main` branch does not contain this interface.
+
+Open the extracted project folder. This is the repository root: it contains
+`raw_data`, `submission` and `tutorials`. Open this folder, rather than
+the `submission` or `interface` folder.
+
+#### 2. Open a terminal and check Python
+
+On **Windows**, open the project folder in File Explorer, type `powershell`
+in its address bar and press **Enter**. In the window that opens, run:
+
+```powershell
+python --version
+```
+
+If that command is unavailable, try `py --version`. If it reports Python 3,
+use `py` instead of `python` in the Windows server command below.
+
+On **Linux**, open a terminal in the project folder using your file manager's
+**Open in Terminal** option, if available. Alternatively, open a terminal and
+run `cd "/path/to/project"`, replacing the example path with your actual
+project folder. Then run:
+
+```bash
+python3 --version
+```
+
+The command should report `Python 3.x.x`. If Python is missing, follow
+[the official Python installation instructions](https://www.python.org/downloads/)
+for your operating system, then close and reopen the terminal and repeat
+the check. For running the model and tests, follow the separate project
+setup instructions; viewing the interface does not require that setup.
+
+#### 3. Start the local server
+
+Run the command for your operating system from the repository root.
+
+**Windows PowerShell:**
 
 ```powershell
 python -m http.server 8000 --bind 127.0.0.1
 ```
 
-Open [the local comparison page](http://localhost:8000/submission/interface/index.html).
-The [static interface](../interface/index.html) fetches
-`submission/raw_uncensored_document.txt` and `submission/submission.txt`;
-it displays saved files and does not run the model. Opening it through
-`file://` cannot load those files.
+**Linux:**
 
-The original appears on the left; a word is highlighted when its paired
-output word differs and contains an asterisk. The saved output appears on the right. The page includes a
-theme toggle and stacks panels on narrow screens. It displays load/empty-file
+```bash
+python3 -m http.server 8000 --bind 127.0.0.1
+```
+
+Leave this terminal open. A message beginning with `Serving HTTP on`
+means the server has started. The terminal stays occupied while it serves
+the files; this is expected.
+
+#### 4. Open and use the interface
+
+Copy this address into your **browser's address bar**, then press **Enter**:
+
+[http://localhost:8000/submission/interface/index.html](http://localhost:8000/submission/interface/index.html)
+
+The [static interface](../interface/index.html) loads
+`submission/raw_uncensored_document.txt` on the left and
+`submission/submission.txt` on the right. These are the original and saved
+output files. There is no upload or generation step on this page.
+
+A word in the original is highlighted when its paired output word differs
+and contains an asterisk. Use the theme toggle to change the appearance;
+the panels stack on narrow screens. The page displays load/empty-file
 errors and alignment counts. A line with a different word count is shown
 without highlights; different line counts disable all original highlights.
-These visual checks are separate from the masking syntax and privacy checks.
+These visual checks are separate from the masking syntax and privacy checks:
+opening the page successfully does not establish that the output passes them.
+
+If either saved file changes, refresh the browser to reload the comparison.
+
+#### 5. Stop the server
+
+Return to the terminal and press **Ctrl+C**. The command prompt returns,
+and the server stops. Repeat steps 3 and 4 whenever you want to open the
+comparison again.
+
+#### Common problems
+
+| What you see | What to do |
+|---|---|
+| `python` is not recognised on Windows | Try `py --version` and use `py` for the server if it reports Python 3. Otherwise install Python and reopen the terminal. |
+| `python3` is not found on Linux | Install Python 3 for your distribution, reopen the terminal and repeat the version check. |
+| The browser cannot connect | Check that the terminal still shows the running server and that the browser address uses the same port. |
+| `404 File not found` | Stop the server with Ctrl+C, open the repository root containing `submission`, and start it again there. Check the full browser address above. |
+| The port is already in use | Replace `8000` with `8001` in the server command and in the browser address. |
+| The page opens but cannot load a text file | Use the HTTP address above instead of opening the HTML file directly with `file://`. Confirm that both text files exist in `submission` and are not empty. |
+| The page reports different line or word counts | The files loaded, but their structure does not align. Review the saved output and the [syntax validation instructions](../benchmark/README.md); restarting the server does not repair an output file. |
 
 ## Engineering rationale and development history
 
