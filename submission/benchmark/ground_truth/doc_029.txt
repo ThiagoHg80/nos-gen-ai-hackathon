@@ -2,7 +2,7 @@ PEDIDO DE APOIO SOCIAL — Hospital de São João
 Data do documento: 03/06/2026    |    Referência: REF-2026-0029
 Nome do titular: * *
 Profissão: professora
-Morada de contacto: * * * * * *
+Morada de contacto: * * *, *, * *
 Telefone: * * * * *    Email: *
 Identificador fiscal: *
 Entidade responsável: Hospital de São João
@@ -14,7 +14,7 @@ Valor administrativo          | 477,40 EUR
 Nota interna: * enviou os documentos por correio eletrónico.
 IBAN associado ao titular: * * * * * * *.
 O número REF-2026-0029 é uma referência de processo não pessoal nesta política.
-Endereço de correspondência repetido: * * * * * *.
+Endereço de correspondência repetido: * * *, *, * *.
 A data 04/09/2026 corresponde ao processamento do pedido e não à data de nascimento.
 O documento foi revisto por * * e posteriormente confirmado por *.
 O nome da cidade do Porto é aqui uma localização institucional e deve permanecer visível.

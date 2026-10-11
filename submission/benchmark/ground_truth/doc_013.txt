@@ -2,7 +2,7 @@ RECIBO DE VENCIMENTO — Universidade do Porto
 Data do documento: 14/02/2026    |    Referência: REF-2026-0013
 Nome do titular: * *
 Profissão: enfermeira
-Morada de contacto: * * * * * *
+Morada de contacto: * * *, *, * *
 Telefone: * * * * *    Email: *
 Identificador fiscal: *
 Entidade responsável: Universidade do Porto
@@ -11,7 +11,7 @@ Campo                         | Valor
 Processo                       | REF-2026-0013
 Data de registo                | 14/09/2026
 Valor administrativo          | 269,40 EUR
-Endereço de correspondência repetido: * * * * * *.
+Endereço de correspondência repetido: * * *, *, * *.
 Titular da conta: * *.
 IBAN associado ao titular: * * * * * * *.
 O documento foi revisto por * * e posteriormente confirmado por *.

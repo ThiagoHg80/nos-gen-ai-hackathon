@@ -2,7 +2,7 @@ DECLARAÇÃO PROFISSIONAL — Hospital de São João
 Data do documento: 09/09/2026    |    Referência: REF-2026-0008
 Nome do titular: * *
 Profissão: engenheiro informático
-Morada de contacto: * * * * * * * * *
+Morada de contacto: * * *, *, * * * * *
 Telefone: * * * * *    Email: *
 Identificador fiscal: *
 Entidade responsável: Hospital de São João
@@ -12,7 +12,7 @@ Processo                       | REF-2026-0008
 Data de registo                | 09/09/2026
 Valor administrativo          | 204,40 EUR
 Rede social indicada: *; perfil público da instituição: @instituicao_oficial.
-Endereço de correspondência repetido: * * * * * * * * *.
+Endereço de correspondência repetido: * * *, *, * * * * *.
 IBAN associado ao titular: * * * * * * *.
 O documento foi revisto por * * e posteriormente confirmado por *.
 O nome da cidade do Porto é aqui uma localização institucional e deve permanecer visível.

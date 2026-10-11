@@ -2,7 +2,7 @@ INSURANCE CLAIM — National Health Service
 Document date: 23/02/2026    |    Reference: REF-2026-0049
 Subject name: * *
 Occupation: accountant
-Contact address: * * * * * *
+Contact address: * * *, * * *
 Phone: * * *    Email: *
 Tax identifier: *
 Responsible organisation: National Health Service
@@ -18,7 +18,7 @@ Social media username: *; organisation profile: @official_organisation.
 Account identifier: * * * * * *.
 The reference REF-2026-0049 is a non-personal case code under this policy.
 The city of London is mentioned as general context and is not a personal address.
-Repeated mailing address: * * * * * *.
+Repeated mailing address: * * *, * * *.
 The name National Health Service identifies an organisation, not the account holder.
 Emergency contact: * * (brother).
 Additional observations:
