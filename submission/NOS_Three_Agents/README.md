@@ -619,6 +619,9 @@ Referenced tools:
 
 - [PyMuPDF](https://pymupdf.readthedocs.io/) — PDF extraction.
 - [LangChain](https://docs.langchain.com/) — separate agent pipeline/integrations.
+- [langchain-core](https://pypi.org/project/langchain-core/) - message types and runnable pipeline abstractions.
+- [langchain-google-genai](https://pypi.org/project/langchain-google-genai/) - Gemini chat-model integration.
+- [langchain-openai](https://pypi.org/project/langchain-openai/) - OpenAI-compatible chat-model integration used by the local provider.
 - [Gemini API](https://ai.google.dev/gemini-api/docs) — configured cloud provider.
 - [Presidio](https://github.com/microsoft/presidio) — privacy entity detection.
 - [spaCy multilingual models](https://spacy.io/models/xx) — shared NER pipeline.

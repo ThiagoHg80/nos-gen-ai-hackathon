@@ -115,3 +115,39 @@ check skipped unless explicitly selected. The indexed secret scan found no
 configured matches. An earlier run hit an existing timestamp-based run-name
 collision in Agent C; the repeated suite passed. That intermittent collision
 is recorded for team review and was not changed by this patch.
+
+## Current candidate privacy review
+
+Review date: 2026-10-11. Candidate: `submission/submission.txt`.
+SHA-256: `945670e3095b497e491cd676dea835afd33255a0285965cfcb65122779c08885`.
+
+The explicitly selected candidate check returns **1 failure and 11 passing
+synthetic privacy tests**. The failure is the zero-findings expectation:
+the detector returns 16 spans (8 LOCATION, 6 PERSON, 2 ORGANIZATION).
+It does not establish that all 16 are leaks.
+
+| Group | Count | Review finding |
+|---|---|---|
+| Field labels | 11 | Spans lie entirely before their line's colon. The prompt preserves labels; these findings do not identify unmasked field values. |
+| Sex value | 1 | ORGANIZATION detection on line 7 overlaps the retained sex value; the prompt explicitly preserves sex. |
+| Document title/header | 1 | LOCATION span [0,50) crosses the title/header boundary. Requires contextual review; metadata is retained by the prompt. |
+| Values or cross-line spans | 3 | LOCATION [899,917) on line 23, LOCATION [2051,2060) and PERSON [2074,2084) on line 47 remain unresolved. Review against the source and prompt before accepting the candidate. |
+
+Offsets are zero-based, half-open Python character positions after UTF-8
+reading with newline translation, matching the existing privacy test.
+No detected source fragments are reproduced here.
+
+No detector findings were suppressed, no score threshold was lowered and
+neither candidate nor prompt was edited. A model score of 0.85 is not a
+calibrated probability of a leak.
+
+The detector covers PERSON, EMAIL_ADDRESS, PHONE_NUMBER, LOCATION and
+ORGANIZATION. It does not independently implement the prompt's government,
+professional, financial or biometric identifiers, age, ethnicity, religion
+or income rules. Therefore even resolving these spans would not prove
+complete compliance with the prompt. The prompt also preserves clinical
+content; that design choice is not a general anonymity guarantee.
+
+**Status: candidate privacy not approved.** Resolve the four contextual
+findings and review uncovered categories before delivery. The freeze is
+a separate task and was not modified by this review.
