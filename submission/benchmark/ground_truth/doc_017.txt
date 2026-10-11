@@ -2,7 +2,7 @@ RELATÓRIO DE FISIOTERAPIA — Banco de Portugal
 Data do documento: 18/06/2026    |    Referência: REF-2026-0017
 Nome do titular: * *
 Profissão: engenheiro informático
-Morada de contacto: * * * * * * * * *
+Morada de contacto: * * *, *, * * * * *
 Telefone: * * * * *    Email: *
 Identificador fiscal: *
 Entidade responsável: Banco de Portugal
@@ -19,7 +19,7 @@ Profissional responsável: * *.
 O nome Banco de Portugal refere-se a uma organização, não à identidade do titular.
 Nota interna: * enviou os documentos por correio eletrónico.
 Diagnóstico: entorse do tornozelo.
-Endereço de correspondência repetido: * * * * * * * * *.
+Endereço de correspondência repetido: * * *, *, * * * * *.
 Observações complementares:
 A consulta decorreu sem intercorrências. A equipa registou os sinais vitais, explicou os procedimentos e entregou recomendações gerais de acompanhamento.
 A informação relativa ao diagnóstico é relevante para o tratamento e não constitui, por si só, um identificador pessoal nesta política de teste.

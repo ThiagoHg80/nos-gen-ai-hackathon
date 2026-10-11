@@ -8,9 +8,8 @@ model is Gemini, or any local OpenAI-compatible server for testing.
 PDF -> raw_uncensored_document.txt -> prompt -> LLM -> answer file
 ```
 
-The agent does not check, score or record its answers. The benchmark folder
-currently contains synthetic data, not executable evaluation modules.
-Use the optional preflight and the project evaluation tools separately.
+The agent does not check, score or record its answers. That is the job of
+`benchmark/`, which you can run on any answer file afterwards.
 
 ## Setup
 
@@ -36,7 +35,8 @@ python -m agent --provider local --out local_answer.txt
 
 `LLM_PROVIDER` and `LOCAL_LLM_URL` set the defaults of `--provider` and
 `--base-url`. Temperature is never sent, so each model uses its own default
-(Gemini 3 recommends keeping it).
+(Gemini 3 recommends keeping it). `--timeout` sets the seconds allowed per
+model call (default 300); raise it for a slow local model.
 
 ## Prompt
 
@@ -44,8 +44,7 @@ The prompt is the instruction text sent as the system message. The
 document is sent separately, as the user message between `<document>` tags.
 
 By default the agent reads `submission/prompt.txt`. If that file is empty
-it stops and says so. The prompts directory is not present in the current
-checkout. Pass an existing reviewed file
+it stops and says so. Other prompts are in `submission/prompts/`; pass one
 with `--prompt`.
 
 ## Run
@@ -65,8 +64,9 @@ When the answer goes to `submission.txt` and you passed a different
 `--prompt`, that prompt is also copied into `prompt.txt`, so the two files
 always match.
 
-No new answer file is written when the model call fails or the
-answer is cut off (its `finish_reason` is not `STOP`). PDF extraction happens
+No new answer file is written when the model call fails (it is not
+retried) or the answer is cut off (its `finish_reason` is not `STOP`). PDF
+extraction happens
 before the model call and may already have written raw text.
 
 Exit codes: `0` answer written, `1` model failure, `2` not run (empty prompt
@@ -76,7 +76,12 @@ or no API key).
 
 ```
 python -B security_preflight.py --document candidate_review.txt
+python -m benchmark.mask_syntax_validation raw_uncensored_document.txt submission.txt
+python -m benchmark.mask_diff raw_uncensored_document.txt submission.txt
 ```
+
+To score a model + prompt over the whole benchmark dataset, see the
+scorer section of `benchmark/README.md`.
 
 ## Files
 

@@ -27,6 +27,7 @@ from .extraction import DEFAULT_PDF, extract_pdf
 from .llm import (
     DEFAULT_LOCAL_URL,
     DEFAULT_MODELS,
+    TIMEOUT_S,
     answer_text,
     api_key,
     get_llm,
@@ -56,6 +57,8 @@ def main(argv=None) -> int:
     parser.add_argument("--model", help="model name (default per provider)")
     parser.add_argument("--base-url", default=DEFAULT_LOCAL_URL,
                         help="URL of the local OpenAI-compatible server")
+    parser.add_argument("--timeout", type=float, default=TIMEOUT_S,
+                        help=f"seconds per model call (default {TIMEOUT_S})")
     parser.add_argument("--pdf", type=Path, default=DEFAULT_PDF)
     parser.add_argument("--prompt", type=Path, default=DEFAULT_PROMPT,
                         help="instructions file (default: submission/"
@@ -81,7 +84,8 @@ def main(argv=None) -> int:
         return 0
 
     try:
-        llm = get_llm(args.provider, model, args.base_url)
+        llm = get_llm(args.provider, model, args.base_url,
+                      args.timeout)
     except ValueError as exc:
         print(exc)
         return 2

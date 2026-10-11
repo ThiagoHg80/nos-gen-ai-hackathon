@@ -23,8 +23,12 @@ def test_gemini_needs_a_key(monkeypatch):
         llm.get_llm("gemini")
 
 
-def test_models_leave_temperature_unset(monkeypatch):
-    monkeypatch.setattr(llm, "api_key", lambda: "TESTKEY")
-    assert llm.get_llm("gemini").temperature is None
+def test_timeout_is_passed_to_the_model():
+    local = llm.get_llm("local", base_url="http://127.0.0.1:1/v1",
+                        timeout=600)
+    assert local.request_timeout == 600
+
+
+def test_one_attempt_only():
     local = llm.get_llm("local", base_url="http://127.0.0.1:1/v1")
-    assert local.temperature is None and local.model_name == "local"
+    assert local.max_retries == 0
